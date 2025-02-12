@@ -1,5 +1,6 @@
 ﻿using Firebase.Database.Query;
 using MonsterFusionBackend.Data;
+using MonsterFusionBackend.Utils;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -16,14 +17,11 @@ namespace MonsterFusionBackend.View.MainMenu
         public bool OptionAutoRun => true;
 
         public bool IsRunning { get; set; }
-
-        public async Task Execute()
+        public void Start()
         {
-            await ClearErrorDataInLeaderBoard();
-            Console.ReadKey();
-            Kill();
+            ClearErrorDataInLeaderBoard();
         }
-        async Task ClearErrorDataInLeaderBoard()
+        async void ClearErrorDataInLeaderBoard()
         {
             IsRunning = true;
             while(IsRunning)
@@ -37,28 +35,19 @@ namespace MonsterFusionBackend.View.MainMenu
                 }
                 else
                 {
-                    int count = 0;
                     foreach (var item in listData)
                     {
-                        if (count >= 100) break;
                         if (item.lastRunTime == 0 || item.lastRunTime > nowLong + 120)
                         {
-                            Console.WriteLine("Deleting " + item.username + "  " + item.lastRunTime);
                             await DBManager.FBClient.Child("LeaderBoards").Child("AviatorEvent").Child(item.id).DeleteAsync();
-                            string filePath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + "/AviatorRemovedLogText.txt";
-                            if(!File.Exists(filePath))
-                            {
-                                using (File.Create(filePath)) ;
-                            }
-                            File.AppendAllText(filePath, $"Removed {item.username}   {item.diamond}   {item.lastRunTime} - {nowLong} \n");
-                            count++;
+                            LogUtils.LogI($"Removed {item.username}   {item.diamond}   {item.lastRunTime}");
                         }
                     }
                 }
                 await Task.Delay(1000 * 120);
             }
         }
-        public void Kill()
+        public void Stop()
         {
             IsRunning = false;
             Program.ShowMenu();
