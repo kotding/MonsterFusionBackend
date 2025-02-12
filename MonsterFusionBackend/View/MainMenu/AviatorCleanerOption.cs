@@ -11,7 +11,11 @@ namespace MonsterFusionBackend.View.MainMenu
 {
     internal class AviatorCleanerOption : IMenuOption
     {
-        public string Name => "Aviator Leaderboard cleaner";
+        public string Name => "Aviator Leaderboard Cleaner";
+
+        public bool OptionAutoRun => true;
+
+        public bool IsRunning { get; set; }
 
         public async Task Execute()
         {
@@ -21,18 +25,15 @@ namespace MonsterFusionBackend.View.MainMenu
         }
         async Task ClearErrorDataInLeaderBoard()
         {
-            while(true)
+            IsRunning = true;
+            while(IsRunning)
             {
-                Console.Clear();
                 DateTime now = await DateTimeManager.GetUTCAsync();
                 long nowLong = long.Parse(now.ToString("yyMMddHHmmss"));
-                Console.WriteLine(now);
-                Console.WriteLine(nowLong);
                 string js = await DBManager.FBClient.Child("LeaderBoards").Child("AviatorEvent").OnceAsJsonAsync();
                 List<AvivatorLeaderBoardItemData> listData = JsonConvert.DeserializeObject<Dictionary<string, AvivatorLeaderBoardItemData>>(js).Values.ToList();
                 if (listData == null)
                 {
-                    Console.WriteLine("Null");
                 }
                 else
                 {
@@ -54,13 +55,12 @@ namespace MonsterFusionBackend.View.MainMenu
                         }
                     }
                 }
-                Console.WriteLine("All error data cleaned");
                 await Task.Delay(1000 * 120);
             }
         }
         public void Kill()
         {
-            Console.Clear();
+            IsRunning = false;
             Program.ShowMenu();
         }
     }

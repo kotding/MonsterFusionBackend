@@ -1,9 +1,7 @@
-﻿
-using MonsterFusionBackend.View;
+﻿using MonsterFusionBackend.View;
 using MonsterFusionBackend.View.MainMenu;
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace MonsterFusionBackend
 {
@@ -13,23 +11,37 @@ namespace MonsterFusionBackend
         static void Main(string[] args)
         {
             Init();
-            StartMenu();
+            StartAutoRunOption();
+            while(true)
+            {
+                ShowMenuSelection();
+            }
         }
         static void Init()
         {
             listOptions = new List<IMenuOption>();
             listOptions.Add(new AviatorCleanerOption());
         }
+        static void StartAutoRunOption()
+        {
+            foreach(var option in listOptions)
+            {
+                if(option.OptionAutoRun)
+                {
+                    option.Execute();
+                }
+            }
+        }
         static void DrawMenu()
         {
             Console.WriteLine("==========Menu===========\n");
             for(int i = 0; i < listOptions.Count; i++)
             {
-                Console.WriteLine(i + ". " + listOptions[i].Name);
+                Console.WriteLine(i + ". " + listOptions[i].Name + " " + (listOptions[i].IsRunning? "[running]" : "[stoped]"));
             }
             Console.WriteLine();
         }
-        static void StartMenu()
+        static void ShowMenuSelection()
         {
             int selected = -1;
             while (true)
@@ -45,12 +57,13 @@ namespace MonsterFusionBackend
                     }
                 }
             }
-            listOptions[selected].Execute().Wait();
+            listOptions[selected].Execute();
         }
 
         public static void ShowMenu()
         {
-            StartMenu();
+            Console.Clear();
+            ShowMenuSelection();
         }
     }
 }
