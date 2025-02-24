@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.Win32;
 using System.Diagnostics;
+using MonsterFusionBackend.View.MainMenu.PVPControllerOption;
 
 namespace MonsterFusionBackend
 {
@@ -52,6 +53,7 @@ namespace MonsterFusionBackend
             if (AutoStartup == false) AutoStartup = true;
             listOptions = new List<IMenuOption>();
             listOptions.Add(new AviatorCleanerOption());
+            listOptions.Add(new PVPControllerOption());
 
             listOptions.Sort((a,b) => b.OptionAutoRun.CompareTo(a.OptionAutoRun));
         }
@@ -92,7 +94,7 @@ namespace MonsterFusionBackend
                     }
                 }
             }
-            if (listOptions[selected].IsRunning)
+            if (!listOptions[selected].IsRunning)
             {
                 listOptions[selected].Start();
             }

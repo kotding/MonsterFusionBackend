@@ -133,6 +133,8 @@
     <Compile Include="View\MainMenu\AviatorCleanerOption\AviatorLeaderBoardItem.cs" />
     <Compile Include="View\MainMenu\IMenuOption.cs" />
     <Compile Include="View\MainMenu\MenuServiceBase.cs" />
+    <Compile Include="View\MainMenu\PVPControllerOption\PVPControllerOption.cs" />
+    <Compile Include="View\MainMenu\PVPControllerOption\PVPOptionData.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
