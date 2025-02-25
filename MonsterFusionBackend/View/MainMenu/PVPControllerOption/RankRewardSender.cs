@@ -36,15 +36,15 @@ namespace MonsterFusionBackend.View.MainMenu.PVPControllerOption
                         new RewardData { REWARD_TYPE = REWARD_TYPE.DIAMOND, NumberReward = 1000 },
                         new RewardData { REWARD_TYPE = REWARD_TYPE.RARE_FUSION_BOTTLE, NumberReward = 5 }
                     }},
-                    new RankReward { top = 4, rewards = new List<RewardData>
+                    new RankReward { top = 10, rewards = new List<RewardData>
                     {
                         new RewardData { REWARD_TYPE = REWARD_TYPE.DIAMOND, NumberReward = 1000 }
                     }}, // Top 4-10
-                    new RankReward { top = 11, rewards = new List<RewardData>
+                    new RankReward { top = 50, rewards = new List<RewardData>
                     {
                         new RewardData { REWARD_TYPE = REWARD_TYPE.DIAMOND, NumberReward = 800 }
                     }}, // Top 11-50
-                    new RankReward { top = 50, rewards = new List<RewardData>
+                    new RankReward { top = 2000, rewards = new List<RewardData>
                     {
                         new RewardData { REWARD_TYPE = REWARD_TYPE.DIAMOND, NumberReward = 500 }
                     }} // Top 50-2000
@@ -73,15 +73,15 @@ namespace MonsterFusionBackend.View.MainMenu.PVPControllerOption
                         new RewardData { REWARD_TYPE = REWARD_TYPE.DIAMOND, NumberReward = 2000 },
                         new RewardData { REWARD_TYPE = REWARD_TYPE.RARE_FUSION_BOTTLE, NumberReward = 6 }
                     }},
-                    new RankReward { top = 4, rewards = new List<RewardData>
+                    new RankReward { top = 10, rewards = new List<RewardData>
                     {
                         new RewardData { REWARD_TYPE = REWARD_TYPE.DIAMOND, NumberReward = 1500 }
                     }}, // Top 4-10
-                    new RankReward { top = 11, rewards = new List<RewardData>
+                    new RankReward { top = 50, rewards = new List<RewardData>
                     {
                         new RewardData { REWARD_TYPE = REWARD_TYPE.DIAMOND, NumberReward = 1000 }
                     }}, // Top 11-50
-                    new RankReward { top = 50, rewards = new List<RewardData>
+                    new RankReward { top = 2000, rewards = new List<RewardData>
                     {
                         new RewardData { REWARD_TYPE = REWARD_TYPE.DIAMOND, NumberReward = 800 }
                     }} // Top 50-2000
@@ -112,16 +112,16 @@ namespace MonsterFusionBackend.View.MainMenu.PVPControllerOption
                         new RewardData { REWARD_TYPE = REWARD_TYPE.RARE_FUSION_BOTTLE, NumberReward = 6 },
                         new RewardData { REWARD_TYPE = REWARD_TYPE.RESET_STONE, NumberReward = 6 }
                     }},
-                    new RankReward { top = 4, rewards = new List<RewardData>
+                    new RankReward { top = 10, rewards = new List<RewardData>
                     {
                         new RewardData { REWARD_TYPE = REWARD_TYPE.DIAMOND, NumberReward = 3000 },
                         new RewardData { REWARD_TYPE = REWARD_TYPE.RARE_FUSION_BOTTLE, NumberReward = 6 }
                     }}, // Top 4-10
-                    new RankReward { top = 11, rewards = new List<RewardData>
+                    new RankReward { top = 50, rewards = new List<RewardData>
                     {
                         new RewardData { REWARD_TYPE = REWARD_TYPE.DIAMOND, NumberReward = 2000 }
                     }}, // Top 11-50
-                    new RankReward { top = 50, rewards = new List<RewardData>
+                    new RankReward { top = 2000, rewards = new List<RewardData>
                     {
                         new RewardData { REWARD_TYPE = REWARD_TYPE.DIAMOND, NumberReward = 1500 }
                     }} // Top 50-2000
@@ -152,16 +152,16 @@ namespace MonsterFusionBackend.View.MainMenu.PVPControllerOption
                         new RewardData { REWARD_TYPE = REWARD_TYPE.RARE_FUSION_BOTTLE, NumberReward = 8 },
                         new RewardData { REWARD_TYPE = REWARD_TYPE.RESET_STONE, NumberReward = 8 }
                     }},
-                    new RankReward { top = 4, rewards = new List<RewardData>
+                    new RankReward { top = 10, rewards = new List<RewardData>
                     {
                         new RewardData { REWARD_TYPE = REWARD_TYPE.DIAMOND, NumberReward = 5000 },
                         new RewardData { REWARD_TYPE = REWARD_TYPE.RARE_FUSION_BOTTLE, NumberReward = 8 }
                     }}, // Top 4-10
-                    new RankReward { top = 11, rewards = new List<RewardData>
+                    new RankReward { top = 50, rewards = new List<RewardData>
                     {
                         new RewardData { REWARD_TYPE = REWARD_TYPE.DIAMOND, NumberReward = 3000 }
                     }}, // Top 11-50
-                    new RankReward { top = 50, rewards = new List<RewardData>
+                    new RankReward { top = 2000, rewards = new List<RewardData>
                     {
                         new RewardData { REWARD_TYPE = REWARD_TYPE.DIAMOND, NumberReward = 2000 }
                     }} // Top 50-2000
@@ -193,18 +193,18 @@ namespace MonsterFusionBackend.View.MainMenu.PVPControllerOption
                         new RewardData { REWARD_TYPE = REWARD_TYPE.RESET_STONE, NumberReward = 8 },
                         new RewardData { REWARD_TYPE = REWARD_TYPE.LEGEND_EGG, NumberReward = 1 }
                     }},
-                    new RankReward { top = 4, rewards = new List<RewardData>
+                    new RankReward { top = 10, rewards = new List<RewardData>
                     {
                         new RewardData { REWARD_TYPE = REWARD_TYPE.DIAMOND, NumberReward = 7000 },
                         new RewardData { REWARD_TYPE = REWARD_TYPE.RARE_FUSION_BOTTLE, NumberReward = 8 },
                         new RewardData { REWARD_TYPE = REWARD_TYPE.RESET_STONE, NumberReward = 8 }
                     }}, // Top 4-10
-                    new RankReward { top = 11, rewards = new List<RewardData>
+                    new RankReward { top = 50, rewards = new List<RewardData>
                     {
                         new RewardData { REWARD_TYPE = REWARD_TYPE.DIAMOND, NumberReward = 7000 },
                         new RewardData { REWARD_TYPE = REWARD_TYPE.RARE_FUSION_BOTTLE, NumberReward = 8 }
                     }}, // Top 11-50
-                    new RankReward { top = 50, rewards = new List<RewardData>
+                    new RankReward { top = 2000, rewards = new List<RewardData>
                     {
                         new RewardData { REWARD_TYPE = REWARD_TYPE.DIAMOND, NumberReward = 7000 }
                     }} // Top 50-2000
@@ -236,20 +236,20 @@ namespace MonsterFusionBackend.View.MainMenu.PVPControllerOption
                         new RewardData { REWARD_TYPE = REWARD_TYPE.RESET_STONE, NumberReward = 10 },
                         new RewardData { REWARD_TYPE = REWARD_TYPE.LEGEND_EGG, NumberReward = 2 }
                     }},
-                    new RankReward { top = 4, rewards = new List<RewardData>
+                    new RankReward { top = 10, rewards = new List<RewardData>
                     {
                         new RewardData { REWARD_TYPE = REWARD_TYPE.DIAMOND, NumberReward = 10000 },
                         new RewardData { REWARD_TYPE = REWARD_TYPE.RARE_FUSION_BOTTLE, NumberReward = 8 },
                         new RewardData { REWARD_TYPE = REWARD_TYPE.RESET_STONE, NumberReward = 8 },
                         new RewardData { REWARD_TYPE = REWARD_TYPE.LEGEND_EGG, NumberReward = 1 }
                     }}, // Top 4-10
-                    new RankReward { top = 11, rewards = new List<RewardData>
+                    new RankReward { top = 50, rewards = new List<RewardData>
                     {
                         new RewardData { REWARD_TYPE = REWARD_TYPE.DIAMOND, NumberReward = 10000 },
                         new RewardData { REWARD_TYPE = REWARD_TYPE.RARE_FUSION_BOTTLE, NumberReward = 8 },
                         new RewardData { REWARD_TYPE = REWARD_TYPE.RESET_STONE, NumberReward = 8 }
                     }}, // Top 11-50
-                    new RankReward { top = 50, rewards = new List<RewardData>
+                    new RankReward { top = 2000, rewards = new List<RewardData>
                     {
                         new RewardData { REWARD_TYPE = REWARD_TYPE.DIAMOND, NumberReward = 10000 },
                         new RewardData { REWARD_TYPE = REWARD_TYPE.RARE_FUSION_BOTTLE, NumberReward = 5 }
@@ -262,6 +262,7 @@ namespace MonsterFusionBackend.View.MainMenu.PVPControllerOption
         {
             if (top >= 2000) return;
             List<RewardData> rewards = GetReward(rankType,top);
+            if (rewards == null) return;
             List<RewardStruct> listRwStructs = new List<RewardStruct>();
             foreach(var rw in  rewards)
             {
@@ -277,9 +278,10 @@ namespace MonsterFusionBackend.View.MainMenu.PVPControllerOption
         }
         static List<RewardData> GetReward(RankType rankType, int top)
         {
+            Console.WriteLine(rankType + " " + top);
             RankRewardPack pack = listRewardPack.Find(x => x.rankType == rankType);
             if(pack == null) return null;
-            RankReward rankRw = pack.listRewards.FindLast(x => top <= x.top);
+            RankReward rankRw = pack.listRewards.FindLast(x => x.top <= top + 1);
             if(rankRw == null) return null;
             return rankRw.rewards;
         }

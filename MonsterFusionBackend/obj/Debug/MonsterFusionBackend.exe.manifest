@@ -66,14 +66,14 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="MonsterFusionBackend.exe" size="28128">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="MonsterFusionBackend.exe" size="43488">
       <assemblyIdentity name="MonsterFusionBackend" version="1.0.0.0" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>4Qw3i6P4qcdbFYKEOngbyU3/rzeYiTLHDFzzCqF3+z8=</dsig:DigestValue>
+        <dsig:DigestValue>/XzASUT+X48OeT3E1BbOUrU1WmzJf4mAE0q9DUl2240=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>

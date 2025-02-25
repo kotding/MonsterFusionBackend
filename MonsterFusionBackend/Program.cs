@@ -74,7 +74,7 @@ namespace MonsterFusionBackend
             Console.WriteLine();
             for(int i = 0; i < listOptions.Count; i++)
             {
-                Console.WriteLine(i + ". " + listOptions[i].Name + " " + (listOptions[i].IsRunning? "[running]" : "[stoped]"));
+                Console.WriteLine(i + ". " + listOptions[i].Name + " " + (listOptions[i].IsRunning? "[running]" : "[stopped]"));
             }
             Console.WriteLine();
         }

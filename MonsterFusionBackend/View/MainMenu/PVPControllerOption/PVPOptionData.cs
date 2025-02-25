@@ -71,11 +71,13 @@ namespace MonsterFusionBackend.View.MainMenu.PVPControllerOption
             return REWARD_TYPE;
         }
     }
+    [JsonConverter(typeof(StringEnumConverter))]
     public enum MailType
     {
         GlobalMail,
         UserMail
     }
+    [JsonConverter(typeof(StringEnumConverter))]
     public enum MailStatus
     {
         None,
@@ -95,6 +97,7 @@ namespace MonsterFusionBackend.View.MainMenu.PVPControllerOption
         public List<RewardStruct> listRewards;
         [JsonIgnore] public MailType mailType = MailType.UserMail;
     }
+    [JsonConverter(typeof(StringEnumConverter))]
     [Serializable]
     public enum REWARD_TYPE
     {

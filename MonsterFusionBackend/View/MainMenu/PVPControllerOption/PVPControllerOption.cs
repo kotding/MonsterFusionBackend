@@ -40,13 +40,14 @@ namespace MonsterFusionBackend.View.MainMenu.PVPControllerOption
                 AreaRank currArea = listAreaRanks[i];
                 AreaRank nextArea = listAreaRanks[i + 1];
 
-                List<PVPRankData> listRankUps = currArea.listAllRanks.Where(x => x.RankIndex < 3).Select(x =>
+                List<PVPRankData> listRankUps = currArea.listAllRanks.Where(x => x.RankIndex < 3).ToList();
+                foreach(var rank in listRankUps)
                 {
-                    x.RankType = (RankType) Enum.Parse(typeof(RankType),allRankNames[(i+1)].ToUpper(),true);
-                    x.RankPoint = 1000;
-                    return x;
-                }).ToList();
-                if(listRankUps != null)
+                    await RankRewardSender.SendRewardTo(rank.UserID, rank.RankType, rank.RankIndex);
+                    rank.RankType = (RankType)Enum.Parse(typeof(RankType), allRankNames[(i + 1)].ToUpper(), true);
+                    rank.RankPoint = 1000;
+                }
+                if (listRankUps != null)
                 {
                     nextArea.listAllRanks.AddRange(listRankUps);
                 }
@@ -88,6 +89,7 @@ namespace MonsterFusionBackend.View.MainMenu.PVPControllerOption
 
             Console.WriteLine("Pushing board...");
             await PushBoard(listAreaRanks);
+            Console.WriteLine("Board is pushed.");
 
         }
 

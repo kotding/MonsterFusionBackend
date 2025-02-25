@@ -23,6 +23,6 @@ public static class MailSender
 			listRewards = listReward
 		};
 		string js = Serializer.SerializeObject(mailData);
-		await DBManager.FBClient.Child("Mails").Child(userId).PutAsync(js);
+		await DBManager.FBClient.Child("Mails").Child("User_Mails").Child(userId).Child(mailData.mailId).PutAsync(js);
 	}
 }
