@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace MonsterFusionBackend.View.MainMenu
 {
-    internal class AviatorCleanerOption : IMenuOption
+    internal class AviatorCleanerOptions : IMenuOption
     {
         public string Name => "Aviator Leaderboard Cleaner";
 

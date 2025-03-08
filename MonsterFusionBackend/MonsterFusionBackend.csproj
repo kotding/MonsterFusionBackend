@@ -134,6 +134,7 @@
     <Compile Include="Utils\Serializer.cs" />
     <Compile Include="View\MainMenu\AviatorCleanerOption\AviatorCleanerOption.cs" />
     <Compile Include="View\MainMenu\AviatorCleanerOption\AviatorLeaderBoardItem.cs" />
+    <Compile Include="View\MainMenu\AviatorCleanerOption\AviatorResetBoardOption.cs" />
     <Compile Include="View\MainMenu\IMenuOption.cs" />
     <Compile Include="View\MainMenu\MenuServiceBase.cs" />
     <Compile Include="View\MainMenu\PVPControllerOption\PVPControllerOption.cs" />
