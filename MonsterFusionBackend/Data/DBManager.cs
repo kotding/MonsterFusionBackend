@@ -8,7 +8,7 @@ namespace MonsterFusionBackend.Data
     {
         static FirebaseClient fbClient = new FirebaseClient("https://monster-fusion-test-android-default-rtdb.firebaseio.com/", new FirebaseOptions
         {
-            JsonSerializerSettings = new Newtonsoft.Json.JsonSerializerSettings
+            JsonSerializerSettings = new JsonSerializerSettings
             {
                 DateFormatString = "dd/MM/yyyy HH:mm:ss",
                 DateFormatHandling = DateFormatHandling.IsoDateFormat,

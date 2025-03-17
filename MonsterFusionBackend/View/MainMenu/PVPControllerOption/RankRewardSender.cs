@@ -359,7 +359,6 @@ namespace MonsterFusionBackend.View.MainMenu.PVPControllerOption
         }
         static List<RewardData> GetReward(RankType rankType, int top)
         {
-            Console.WriteLine(rankType + " " + top);
             RankRewardPack pack = listRewardPack.Find(x => x.rankType == rankType);
             if (pack == null) return null;
             RankReward rankRw = pack.listRewards.FindLast(x => x.top <= top + 1);

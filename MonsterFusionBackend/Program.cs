@@ -7,6 +7,7 @@ using System.Diagnostics;
 using MonsterFusionBackend.View.MainMenu.PVPControllerOption;
 using MonsterFusionBackend.View.MainMenu.AviatorCleanerOption;
 using MonsterFusionBackend.View.MainMenu.PartyEventOption;
+using System.Threading.Tasks;
 
 namespace MonsterFusionBackend
 {
@@ -66,7 +67,7 @@ namespace MonsterFusionBackend
             {
                 if(option.OptionAutoRun)
                 {
-                    option.Start();
+                    Task.Run(option.Start);
                 }
             }
         }

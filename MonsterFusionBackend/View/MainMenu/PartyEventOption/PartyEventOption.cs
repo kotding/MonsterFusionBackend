@@ -34,7 +34,6 @@ namespace MonsterFusionBackend.View.MainMenu.PartyEventOption
                     await Task.Delay(diff);
                 }
                 await ResetPartyRank();
-
             }
         }
         async Task ResetPartyRank()
