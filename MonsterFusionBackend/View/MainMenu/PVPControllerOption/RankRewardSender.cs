@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace MonsterFusionBackend.View.MainMenu.PVPControllerOption
 {
-    
+
     internal class RankRewardSender
     {
         #region DATA
@@ -257,14 +254,98 @@ namespace MonsterFusionBackend.View.MainMenu.PVPControllerOption
                 }
             }
         };
+        static List<RankReward> listPartyRankRewards = new List<RankReward>()
+{
+    new RankReward
+    {
+        top = 1,
+        rewards = new List<RewardData>()
+        {
+            new RewardData { REWARD_TYPE = REWARD_TYPE.LEGEND_EGG, NumberReward = 1 }
+        }
+    },
+    new RankReward
+    {
+        top = 2,
+        rewards = new List<RewardData>()
+        {
+            new RewardData { REWARD_TYPE = REWARD_TYPE.ELEMENTAL_EGG, NumberReward = 3 }
+        }
+    },
+    new RankReward
+    {
+        top = 3,
+        rewards = new List<RewardData>()
+        {
+            new RewardData { REWARD_TYPE = REWARD_TYPE.ELEMENTAL_EGG, NumberReward = 1 }
+        }
+    },
+    new RankReward
+    {
+        top = 4,
+        rewards = new List<RewardData>()
+        {
+            new RewardData { REWARD_TYPE = REWARD_TYPE.DIAMOND, NumberReward = 600 }
+        }
+    },
+    new RankReward
+    {
+        top = 5,
+        rewards = new List<RewardData>()
+        {
+            new RewardData { REWARD_TYPE = REWARD_TYPE.DIAMOND, NumberReward = 500 }
+        }
+    },
+    new RankReward
+    {
+        top = 6,
+        rewards = new List<RewardData>()
+        {
+            new RewardData { REWARD_TYPE = REWARD_TYPE.DIAMOND, NumberReward = 400 }
+        }
+    },
+    new RankReward
+    {
+        top = 7,
+        rewards = new List<RewardData>()
+        {
+            new RewardData { REWARD_TYPE = REWARD_TYPE.DIAMOND, NumberReward = 300 }
+        }
+    },
+    new RankReward
+    {
+        top = 8,
+        rewards = new List<RewardData>()
+        {
+            new RewardData { REWARD_TYPE = REWARD_TYPE.DIAMOND, NumberReward = 200 }
+        }
+    },
+    new RankReward
+    {
+        top = 9,
+        rewards = new List<RewardData>()
+        {
+            new RewardData { REWARD_TYPE = REWARD_TYPE.DIAMOND, NumberReward = 100 }
+        }
+    },
+    new RankReward
+    {
+        top = 50,
+        rewards = new List<RewardData>()
+        {
+            new RewardData { REWARD_TYPE = REWARD_TYPE.DIAMOND, NumberReward = 50 }
+        }
+    },
+};
+
         #endregion
         public static async Task SendRewardTo(string userId, RankType rankType, int top)
         {
             if (top >= 2000) return;
-            List<RewardData> rewards = GetReward(rankType,top);
+            List<RewardData> rewards = GetReward(rankType, top);
             if (rewards == null) return;
             List<RewardStruct> listRwStructs = new List<RewardStruct>();
-            foreach(var rw in  rewards)
+            foreach (var rw in rewards)
             {
                 RewardStruct rwStruct = new RewardStruct
                 {
@@ -273,17 +354,30 @@ namespace MonsterFusionBackend.View.MainMenu.PVPControllerOption
                 };
                 listRwStructs.Add(rwStruct);
             }
-            string content = $"You have successfully reached the {top+1}st rank in the leaderboard and received a reward.\r\n\r\nTry to maintain this form in the next week.";
-            await MailSender.SendRewards(userId, "Ranking rewards", "Congratulations on receiving your ranking reward last week!", content,listRwStructs);
+            string content = $"You have successfully reached the {top + 1}st rank in the leaderboard and received a reward.\r\n\r\nTry to maintain this form in the next week.";
+            await MailSender.SendRewards(userId, "Ranking rewards", "Congratulations on receiving your ranking reward last week!", content, listRwStructs);
         }
         static List<RewardData> GetReward(RankType rankType, int top)
         {
             Console.WriteLine(rankType + " " + top);
             RankRewardPack pack = listRewardPack.Find(x => x.rankType == rankType);
-            if(pack == null) return null;
+            if (pack == null) return null;
             RankReward rankRw = pack.listRewards.FindLast(x => x.top <= top + 1);
-            if(rankRw == null) return null;
+            if (rankRw == null) return null;
             return rankRw.rewards;
+        }
+
+        public static async Task SendPartyRewardTo(string userId, int top)
+        {
+            RankReward rw = listPartyRankRewards.Find(x => x.top <= top + 1);
+            if (rw == null) return;
+            List<RewardStruct> listRewardStruct = new List<RewardStruct>();
+            foreach (var r in rw.rewards)
+            {
+                listRewardStruct.Add(new RewardStruct(r.REWARD_TYPE, r.NumberReward));
+            }
+            string content = $"You have successfully reached the {top + 1}st rank in the leaderboard and received a reward.\r\n\r\nTry to maintain this form in the next week.";
+            await MailSender.SendRewards(userId, "Party rank reward", "Congratulations on receiving your ranking reward", content, listRewardStruct);
         }
     }
 }

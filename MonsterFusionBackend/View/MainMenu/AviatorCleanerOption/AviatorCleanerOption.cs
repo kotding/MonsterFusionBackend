@@ -17,11 +17,11 @@ namespace MonsterFusionBackend.View.MainMenu
         public bool OptionAutoRun => true;
 
         public bool IsRunning { get; set; }
-        public void Start()
+        public async Task Start()
         {
-            ClearErrorDataInLeaderBoard();
+            await ClearErrorDataInLeaderBoard();
         }
-        async void ClearErrorDataInLeaderBoard()
+        async Task ClearErrorDataInLeaderBoard()
         {
             IsRunning = true;
             while(IsRunning)

@@ -137,6 +137,7 @@
     <Compile Include="View\MainMenu\AviatorCleanerOption\AviatorResetBoardOption.cs" />
     <Compile Include="View\MainMenu\IMenuOption.cs" />
     <Compile Include="View\MainMenu\MenuServiceBase.cs" />
+    <Compile Include="View\MainMenu\PartyEventOption\PartyEventOption.cs" />
     <Compile Include="View\MainMenu\PVPControllerOption\PVPControllerOption.cs" />
     <Compile Include="View\MainMenu\PVPControllerOption\PVPOptionData.cs" />
     <Compile Include="View\MainMenu\PVPControllerOption\RankRewardSender.cs" />

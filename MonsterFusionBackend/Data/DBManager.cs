@@ -6,7 +6,7 @@ namespace MonsterFusionBackend.Data
 {
     internal static class DBManager
     {
-        static FirebaseClient fbClient = new FirebaseClient("https://monsterfusion-c0e4e-default-rtdb.firebaseio.com/", new FirebaseOptions
+        static FirebaseClient fbClient = new FirebaseClient("https://monster-fusion-test-android-default-rtdb.firebaseio.com/", new FirebaseOptions
         {
             JsonSerializerSettings = new Newtonsoft.Json.JsonSerializerSettings
             {

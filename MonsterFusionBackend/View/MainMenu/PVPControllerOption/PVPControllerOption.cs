@@ -3,14 +3,20 @@ using MonsterFusionBackend.Data;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace MonsterFusionBackend.View.MainMenu.PVPControllerOption
 {
+    
     internal class PVPControllerOption : IMenuOption
     {
+        const int TotalRankOpenTime = 7 * 24 * 60; // minute
+        const int TotalRankCloseTime = 1 * 24 * 60;// minute
+
+
         public string Name => "PVP Controller Option";
 
         public bool OptionAutoRun => false;
@@ -20,15 +26,34 @@ namespace MonsterFusionBackend.View.MainMenu.PVPControllerOption
         {
             "Copper","Silver","Gold","Platinum","Diamond","Ultimate"
         };
-        public void Start()
+        public async Task Start()
         {
             IsRunning = true;
-            RunResetRank();
+            while(true)
+            {
+                DateTime now = await DateTimeManager.GetUTCAsync();
+                string expiredString = await DBManager.FBClient.Child("PVP/PVP_Config/EndTime").OnceAsJsonAsync();
+                expiredString = expiredString.Replace("\"", "");
+                DateTime expiredDate = DateTime.ParseExact(expiredString, "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture);
+                if (now < expiredDate)
+                {
+                    TimeSpan diff = expiredDate - now;
+                    await Task.Delay(diff);
+                }
+                await RunResetRank();
+                await Task.Delay(1000 * 60 * TotalRankCloseTime);
+                await DBManager.FBClient.Child("PVP/IsOpen").PutAsync(JsonConvert.SerializeObject(true));
+                now = await DateTimeManager.GetUTCAsync();
+                now = now.AddMinutes(TotalRankOpenTime);
+                string nowString = now.ToString("dd/MM/yyyy HH:mm:ss");
+                await DBManager.FBClient.Child("PVP/PVP_Config/EndTime").PutAsync(JsonConvert.SerializeObject(nowString));
+            }
         }
-        async void RunResetRank()
+        async Task RunResetRank()
         {
             await Task.Delay(100);
             Console.Clear();
+            await DBManager.FBClient.Child("PVP/IsOpen").PutAsync(JsonConvert.SerializeObject(false));
             List<AreaRank> listAreaRanks = new List<AreaRank>();
             for (int i = 0; i < allRankNames.Length; i++)
             {

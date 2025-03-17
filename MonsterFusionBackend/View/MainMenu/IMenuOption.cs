@@ -11,7 +11,7 @@ namespace MonsterFusionBackend.View
         string Name { get; }
         bool OptionAutoRun { get; }
         bool IsRunning { get; set; }
-        void Start();
+        Task Start();
         void Stop();
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Firebase.Database.Query;
 using MonsterFusionBackend.Data;
 using System;
+using System.Threading.Tasks;
 
 namespace MonsterFusionBackend.View.MainMenu.AviatorCleanerOption
 {
@@ -12,9 +13,9 @@ namespace MonsterFusionBackend.View.MainMenu.AviatorCleanerOption
 
         public bool IsRunning { get; set; }
 
-        public void Start()
+        public async Task Start()
         {
-            DBManager.FBClient.Child("LeaderBoards").Child("AviatorEvent").DeleteAsync();
+            await DBManager.FBClient.Child("LeaderBoards").Child("AviatorEvent").DeleteAsync();
         }
 
         public void Stop()

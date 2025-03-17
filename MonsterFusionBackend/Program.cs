@@ -6,6 +6,7 @@ using Microsoft.Win32;
 using System.Diagnostics;
 using MonsterFusionBackend.View.MainMenu.PVPControllerOption;
 using MonsterFusionBackend.View.MainMenu.AviatorCleanerOption;
+using MonsterFusionBackend.View.MainMenu.PartyEventOption;
 
 namespace MonsterFusionBackend
 {
@@ -56,7 +57,7 @@ namespace MonsterFusionBackend
             listOptions.Add(new AviatorCleanerOptions());
             listOptions.Add(new AviatorResetBoardOption());
             listOptions.Add(new PVPControllerOption());
-
+            listOptions.Add(new PartyEventOption());
             listOptions.Sort((a,b) => b.OptionAutoRun.CompareTo(a.OptionAutoRun));
         }
         static void StartAutoRunOption()
