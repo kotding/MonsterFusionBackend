@@ -9,11 +9,11 @@ namespace MonsterFusionBackend.View.MainMenu.PartyEventOption
 {
     internal class PartyEventOption : IMenuOption
     {
-        static int TotalRankOpenTime = 3 * 24 * 60; // minute
-        static int OffsetResetTime = -5; // minute
-
-        //static int TotalRankOpenTime = 2; // minute
+        //static int TotalRankOpenTime = 3 * 24 * 60; // minute
         //static int OffsetResetTime = -5; // minute
+
+        static int TotalRankOpenTime = 2; // minute
+        static int OffsetResetTime = -5; // minute
 
         public string Name => "Party event";
 

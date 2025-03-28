@@ -15,10 +15,10 @@ namespace MonsterFusionBackend.View.MainMenu.PVPControllerOption
     internal class PVPControllerOption : IMenuOption
     {
 
-        const int TotalRankOpenTime = 7 * 24 * 60; // minute
-        const int TotalRankCloseTime = 2 * 60;// minute
-        //const int TotalRankOpenTime = 2; // minute
-        //const int TotalRankCloseTime = 2;// minute
+        //const int TotalRankOpenTime = 7 * 24 * 60; // minute
+        //const int TotalRankCloseTime = 2 * 60;// minute
+        const int TotalRankOpenTime = 2; // minute
+        const int TotalRankCloseTime = 2;// minute
 
         public string Name => "PVP Controller Option";
 
