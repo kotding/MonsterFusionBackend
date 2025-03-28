@@ -4,21 +4,21 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace MonsterFusionBackend.View.MainMenu.PVPControllerOption
 {
-    
+
     internal class PVPControllerOption : IMenuOption
     {
-        //const int TotalRankOpenTime = 7 * 24 * 60; // minute
-        //const int TotalRankCloseTime = 1 * 24 * 60;// minute
 
-        const int TotalRankOpenTime = 1; // minute
-        const int TotalRankCloseTime = 1;// minute
-
+        const int TotalRankOpenTime = 7 * 24 * 60; // minute
+        const int TotalRankCloseTime = 2 * 60;// minute
+        //const int TotalRankOpenTime = 2; // minute
+        //const int TotalRankCloseTime = 2;// minute
 
         public string Name => "PVP Controller Option";
 
@@ -37,7 +37,8 @@ namespace MonsterFusionBackend.View.MainMenu.PVPControllerOption
                 DateTime now = await DateTimeManager.GetUTCAsync();
                 string expiredString = await DBManager.FBClient.Child("PVP").Child("PVP_Config").Child("EndTime").OnceAsJsonAsync();
                 expiredString = expiredString.Replace("\"", "");
-                Console.WriteLine(expiredString);
+                Console.WriteLine("[PVP]: now:" +now.ToString("dd/MM/yyyy HH:mm:ss"));
+                Console.WriteLine("[PVP]: expired:" + expiredString);
                 DateTime expiredDate = DateTime.ParseExact(expiredString, "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture);
                 if (now < expiredDate)
                 {
@@ -45,6 +46,7 @@ namespace MonsterFusionBackend.View.MainMenu.PVPControllerOption
                 }
                 else
                 {
+                    await DowloadBackupPVP();
                     await RunResetRank();
                     await Task.Delay(1000 * 60 * TotalRankCloseTime);
                     await DBManager.FBClient.Child("PVP/IsOpen").PutAsync(JsonConvert.SerializeObject(true));
@@ -52,9 +54,15 @@ namespace MonsterFusionBackend.View.MainMenu.PVPControllerOption
                     now = now.AddMinutes(TotalRankOpenTime);
                     string nowString = now.ToString("dd/MM/yyyy HH:mm:ss");
                     await DBManager.FBClient.Child("PVP/PVP_Config/EndTime").PutAsync(JsonConvert.SerializeObject(nowString));
-                    await Task.Delay(1000 * 60);
+                    await Task.Delay(1000 * 30);
                 }
             }
+        }
+        async Task DowloadBackupPVP()
+        {
+            string js = await DBManager.FBClient.Child("PVP").OnceAsJsonAsync();
+            string backUpFilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "PVPBackup_" + DateTime.UtcNow.ToString("dd-MM-yyyy-HH-mm-ss") + ".json");
+            File.WriteAllText(backUpFilePath, js);
         }
         async Task RunResetRank()
         {
@@ -65,7 +73,7 @@ namespace MonsterFusionBackend.View.MainMenu.PVPControllerOption
             for (int i = 0; i < allRankNames.Length; i++)
             {
                 Console.WriteLine(allRankNames[i]);
-                
+
                 var areaRank = await GetAreaRank(allRankNames[i]);
                 listAreaRanks.Add(areaRank);
             }
@@ -77,32 +85,34 @@ namespace MonsterFusionBackend.View.MainMenu.PVPControllerOption
                 AreaRank currArea = listAreaRanks[i];
                 AreaRank nextArea = listAreaRanks[i + 1];
 
-                List<PVPRankData> listRankUps = currArea.listAllRanks.Where(x => x.RankIndex < 3).ToList();
-
+                List<PVPRankData> listRankUps = currArea.listAllRanks.Where(x => x.RankIndex < 3 && x.RankPoint != 1000).ToList();
+                Console.WriteLine("LIST ALL RANKS " + currArea.listAllRanks.Count);
+                Console.WriteLine("LIST RANK UP " + listRankUps.Count);
                 if (listRankUps != null)
                 {
                     foreach (var rank in listRankUps)
                     {
                         Console.Write("Send reward to " + rank.UserID + " top " + rank.RankIndex);
                         await RankRewardSender.SendRewardTo(rank.UserID, rank.RankType, rank.RankIndex);
-                        Console.WriteLine("[sended]");
+                        Console.WriteLine("  [sended]");
                         rank.RankType = (RankType)Enum.Parse(typeof(RankType), allRankNames[(i + 1)].ToUpper(), true);
                         rank.RankPoint = 1000;
                     }
 
                     nextArea.listAllRanks.AddRange(listRankUps);
                     currArea.listAllRanks.RemoveAll(x => listRankUps.Contains(x));
+                    currArea.listAllRanks.Confuse();
                 }
             }
 
-            foreach(var area in listAreaRanks)
+            foreach (var area in listAreaRanks)
             {
                 area.listSubAreaRanks.Clear();
                 area.listSubAreaRanks.Add(new SubAreaRank());
                 foreach (var rank in area.listAllRanks)
                 {
                     SubAreaRank subAreaRank = area.listSubAreaRanks.Find(sub => sub.listRanks.Count < 20);
-                    if(subAreaRank == null)
+                    if (subAreaRank == null)
                     {
                         subAreaRank = new SubAreaRank();
                         area.listSubAreaRanks.Add(subAreaRank);
@@ -170,7 +180,7 @@ namespace MonsterFusionBackend.View.MainMenu.PVPControllerOption
                         Console.WriteLine("Error");
                     }
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     Console.WriteLine(ex.Message);
                 }
@@ -180,30 +190,52 @@ namespace MonsterFusionBackend.View.MainMenu.PVPControllerOption
         }
         async Task PushBoard(List<AreaRank> listAreas)
         {
-            foreach(var rankName in allRankNames)
+            foreach (var rankName in allRankNames)
             {
                 await DBManager.FBClient.Child("PVP").Child("Rankings").Child(rankName).DeleteAsync();
             }
 
-            for(int i = 0; i < listAreas.Count; i++)
+            var rankingsData = new Dictionary<string, object>();
+            var rankIndexsData = new Dictionary<string, Dictionary<string, string>>();
+
+            for (int i = 0; i < listAreas.Count; i++)
             {
                 var currRankArea = listAreas[i];
                 string currRankName = allRankNames[i];
-                await DBManager.FBClient.Child("PVP").Child("Rankings").Child(currRankName).Child("SubAreaCount").PutAsync(JsonConvert.SerializeObject(currRankArea.SubAreaCount));
+
+                var rankData = new Dictionary<string, object>
+        {
+            { "SubAreaCount", currRankArea.SubAreaCount }
+        };
+
                 for (int currSubAreaIndex = 0; currSubAreaIndex < currRankArea.SubAreaCount; currSubAreaIndex++)
                 {
-                    Dictionary<string, PVPRankData> rankDict = new Dictionary<string, PVPRankData>();
-                    foreach(var rank in currRankArea.listSubAreaRanks[currSubAreaIndex].listRanks)
+                    var subAreaData = new Dictionary<string, object>
+            {
+                { "UserCount", currRankArea.listSubAreaRanks[currSubAreaIndex].UserCount }
+            };
+
+                    foreach (var rank in currRankArea.listSubAreaRanks[currSubAreaIndex].listRanks)
                     {
-                        await DBManager.FBClient.Child("PVP").Child("Rankings").Child("RankIndexs").Child(rank.UserID).Child("Path").PutAsync(JsonConvert.SerializeObject($"{currRankName}/{currRankName}_{currSubAreaIndex + 1}"));
-                        rankDict.Add(rank.UserID, rank);
+                        rankIndexsData[rank.UserID] = new Dictionary<string, string>
+                {
+                    { "Path", $"{currRankName}/{currRankName}_{currSubAreaIndex + 1}" }
+                };
+
+                        subAreaData[rank.UserID] = rank;
                         Console.WriteLine("Add " + rank.UserID);
                     }
-                    string js = JsonConvert.SerializeObject(rankDict);
-                    await DBManager.FBClient.Child("PVP").Child("Rankings").Child(currRankName).Child(currRankName + "_" + (currSubAreaIndex + 1)).PutAsync(js);
-                    await DBManager.FBClient.Child("PVP").Child("Rankings").Child(currRankName).Child(currRankName + "_" + (currSubAreaIndex + 1)).Child("UserCount").PutAsync(JsonConvert.SerializeObject(currRankArea.listSubAreaRanks[currSubAreaIndex].UserCount));
+
+                    string subAreaKey = $"{currRankName}_{currSubAreaIndex + 1}";
+                    rankData[subAreaKey] = subAreaData;
                 }
+
+                rankingsData[currRankName] = rankData;
             }
+
+            rankingsData["RankIndexs"] = rankIndexsData;
+
+            await DBManager.FBClient.Child("PVP").Child("Rankings").PutAsync(JsonConvert.SerializeObject(rankingsData));
         }
         public void Stop()
         {

@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 
 public static class ExtentsionMethods
@@ -56,5 +58,22 @@ public static class ExtentsionMethods
         }
 
         return ret;
+    }
+    public static long ToLong(this DateTime date)
+    {
+        string dateString = date.ToString("yyyyMMddHHmmss", CultureInfo.InvariantCulture);
+        return long.Parse(dateString);
+    }
+    public static DateTime ToDate(this long date)
+    {
+        string dateString = date.ToString("D14");
+        bool isSuccess = DateTime.TryParseExact(
+                dateString,
+                "yyyyMMddHHmmss",
+                CultureInfo.InvariantCulture,
+                DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal,
+                out DateTime result);
+
+        return isSuccess ? result : DateTime.MinValue;
     }
 }
