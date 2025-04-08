@@ -6,8 +6,8 @@ namespace MonsterFusionBackend.Data
 {
     internal static class DBManager
     {
-        const string firebaseIOS = "https://monster-fusion-ios-default-rtdb.firebaseio.com/";
-        const string firebaseAndroid = "https://monsterfusion-c0e4e-default-rtdb.firebaseio.com/PartyRank";
+        //const string firebaseIOS = "https://monster-fusion-ios-default-rtdb.firebaseio.com/";
+        //const string firebaseAndroid = "https://monsterfusion-c0e4e-default-rtdb.firebaseio.com/PartyRank";
         const string firebaseTest = "https://monster-fusion-test-android-default-rtdb.firebaseio.com/";
         static FirebaseClient fbClient = new FirebaseClient(firebaseTest, new FirebaseOptions
         {

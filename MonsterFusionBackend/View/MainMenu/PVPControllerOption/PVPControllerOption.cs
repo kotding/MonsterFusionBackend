@@ -17,12 +17,10 @@ namespace MonsterFusionBackend.View.MainMenu.PVPControllerOption
 
         //const int TotalRankOpenTime = 7 * 24 * 60; // minute
         //const int TotalRankCloseTime = 2 * 60;// minute
-        const int TotalRankOpenTime = 2; // minute
+        const int TotalRankOpenTime = 5; // minute
         const int TotalRankCloseTime = 2;// minute
 
         public string Name => "PVP Controller Option";
-
-        public bool OptionAutoRun => true;
 
         public bool IsRunning { get; set; }
         string[] allRankNames = new string[]
@@ -32,30 +30,36 @@ namespace MonsterFusionBackend.View.MainMenu.PVPControllerOption
         public async Task Start()
         {
             IsRunning = true;
-            while (true)
+            //Program.ShowMenu();
+            while(true)
             {
                 DateTime now = await DateTimeManager.GetUTCAsync();
                 string expiredString = await DBManager.FBClient.Child("PVP").Child("PVP_Config").Child("EndTime").OnceAsJsonAsync();
                 expiredString = expiredString.Replace("\"", "");
-                Console.WriteLine("[PVP]: now:" +now.ToString("dd/MM/yyyy HH:mm:ss"));
+                Console.WriteLine();
+                Console.WriteLine("[PVP]: now:" + now.ToString("dd/MM/yyyy HH:mm:ss"));
                 Console.WriteLine("[PVP]: expired:" + expiredString);
                 DateTime expiredDate = DateTime.ParseExact(expiredString, "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture);
-                if (now < expiredDate)
+                if (now >= expiredDate)
                 {
-                    await Task.Delay(1000 * 60);
-                }
-                else
-                {
+                    Console.WriteLine("[PVP]: dowload pvp backup file...");
                     await DowloadBackupPVP();
+                    Console.WriteLine("[PVP]: dowload pvp backup file success.");
+                    Console.WriteLine("[PVP]: start reset pvp rank...");
                     await RunResetRank();
+                    Console.WriteLine("[PVP]: reset rank complete.");
+                    Console.WriteLine($"[PVP]: wait re-open pvp.... {60 * TotalRankCloseTime}s");
                     await Task.Delay(1000 * 60 * TotalRankCloseTime);
                     await DBManager.FBClient.Child("PVP/IsOpen").PutAsync(JsonConvert.SerializeObject(true));
                     now = await DateTimeManager.GetUTCAsync();
                     now = now.AddMinutes(TotalRankOpenTime);
                     string nowString = now.ToString("dd/MM/yyyy HH:mm:ss");
                     await DBManager.FBClient.Child("PVP/PVP_Config/EndTime").PutAsync(JsonConvert.SerializeObject(nowString));
+                    Console.WriteLine("[PVP]: pvp rank re-opened.");
                     await Task.Delay(1000 * 30);
                 }
+                Console.WriteLine("[PVP]: wait delay 60s...");
+                await Task.Delay(60000);
             }
         }
         async Task DowloadBackupPVP()
@@ -97,11 +101,17 @@ namespace MonsterFusionBackend.View.MainMenu.PVPControllerOption
                         Console.WriteLine("  [sended]");
                         rank.RankType = (RankType)Enum.Parse(typeof(RankType), allRankNames[(i + 1)].ToUpper(), true);
                         rank.RankPoint = 1000;
+                        rank.RankIndex = 999;
                     }
 
                     nextArea.listAllRanks.AddRange(listRankUps);
                     currArea.listAllRanks.RemoveAll(x => listRankUps.Contains(x));
                     currArea.listAllRanks.Confuse();
+                    foreach(var rank in currArea.listAllRanks)
+                    {
+                        rank.RankIndex = 999;
+                        rank.RankPoint = 1000;
+                    }
                 }
             }
 
@@ -111,7 +121,7 @@ namespace MonsterFusionBackend.View.MainMenu.PVPControllerOption
                 area.listSubAreaRanks.Add(new SubAreaRank());
                 foreach (var rank in area.listAllRanks)
                 {
-                    SubAreaRank subAreaRank = area.listSubAreaRanks.Find(sub => sub.listRanks.Count < 20);
+                    SubAreaRank subAreaRank = area.listSubAreaRanks.Find(sub => sub.listRanks.Count < 100);
                     if (subAreaRank == null)
                     {
                         subAreaRank = new SubAreaRank();
@@ -161,12 +171,11 @@ namespace MonsterFusionBackend.View.MainMenu.PVPControllerOption
                 int userCount = userCountJs == "null" ? 0 : int.Parse(userCountJs);
                 Console.WriteLine(currRank + " sub area " + i + " user count " + userCount);
                 subAreaRank.UserCount = userCount;
-                string subAreaJs = await DBManager.FBClient.Child("PVP").Child("Rankings").Child(currRank).Child(currRank + "_" + i).OnceAsJsonAsync();
-                string pattern = "\"UserCount\":\\s*\\d+(?:,)?";
-                subAreaJs = Regex.Replace(subAreaJs, pattern, "");
-                Console.WriteLine("Data length " + subAreaJs.Length);
                 try
                 {
+                    string subAreaJs = await DBManager.FBClient.Child("PVP").Child("Rankings").Child(currRank).Child(currRank + "_" + i).OnceAsJsonAsync();
+                    string pattern = "\"UserCount\":\\s*\\d+(?:,)?";
+                    subAreaJs = Regex.Replace(subAreaJs, pattern, "");
                     Dictionary<string, PVPRankData> dictRanks = JsonConvert.DeserializeObject<Dictionary<string, PVPRankData>>(subAreaJs);
                     if (dictRanks != null && dictRanks.Values != null)
                     {
@@ -174,10 +183,6 @@ namespace MonsterFusionBackend.View.MainMenu.PVPControllerOption
                         subAreaRank.listRanks = dictRanks.Values.ToList();
                         areaRank.listAllRanks.AddRange(subAreaRank.listRanks);
                         areaRank.listSubAreaRanks.Add(subAreaRank);
-                    }
-                    else
-                    {
-                        Console.WriteLine("Error");
                     }
                 }
                 catch (Exception ex)

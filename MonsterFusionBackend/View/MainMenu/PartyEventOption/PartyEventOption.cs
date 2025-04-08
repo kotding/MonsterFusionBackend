@@ -12,37 +12,39 @@ namespace MonsterFusionBackend.View.MainMenu.PartyEventOption
         //static int TotalRankOpenTime = 3 * 24 * 60; // minute
         //static int OffsetResetTime = -5; // minute
 
-        static int TotalRankOpenTime = 2; // minute
+        static int TotalRankOpenTime = 5; // minute
         static int OffsetResetTime = -5; // minute
 
         public string Name => "Party event";
-
-        public bool OptionAutoRun => true;
 
         public bool IsRunning { get; set; }
 
         public async Task Start()
         {
             IsRunning = true;
+            //Program.ShowMenu();
             while(true)
             {
                 DateTime now = await DateTimeManager.GetUTCAsync();
-                Console.WriteLine("[Party] now: " + now);
+
                 string expiredString = await DBManager.FBClient.Child("PartyRank/TimeExpired").OnceAsJsonAsync();
                 expiredString = expiredString.Replace("\"", "");
                 long longExpired = long.Parse(expiredString);
                 DateTime expiredDate = longExpired.ToDate().AddMinutes(OffsetResetTime);
-                Console.WriteLine("[Party] expired: " + now);
-                if (now < expiredDate)
+                Console.WriteLine();
+                Console.WriteLine("[Party] now: " + now);
+                Console.WriteLine("[Party] expired: " + expiredDate);
+                Console.WriteLine($"[Party] reset rank in {(expiredDate - now).TotalSeconds}s.");
+                if (now >= expiredDate)
                 {
-                    TimeSpan diff = expiredDate - now;
-                    await Task.Delay((int)diff.TotalSeconds * 1000);
-                }
-                else
-                {
+                    Console.WriteLine("[Party] Dowload party rank backup file...");
                     await DowloadBackupParty();
+                    Console.WriteLine("[Party] Dowload party rank back up file success.");
+                    Console.WriteLine("[Party] Run reset rank party rank...");
                     await ResetPartyRank();
+                    Console.WriteLine("[Party] Reset party rank success.");
                 }
+                await Task.Delay(60000);
             }
         }
         async Task DowloadBackupParty()
@@ -69,6 +71,7 @@ namespace MonsterFusionBackend.View.MainMenu.PartyEventOption
                 }
             }
             await DBManager.FBClient.Child("PartyRank/TotalUserCount").PutAsync(0);
+
             DateTime now = await DateTimeManager.GetUTCAsync();
             DateTime nextExpiredDate = now.AddMinutes(TotalRankOpenTime).AddMinutes(-OffsetResetTime);
             Console.WriteLine("[Party] set next expired:" + nextExpiredDate);

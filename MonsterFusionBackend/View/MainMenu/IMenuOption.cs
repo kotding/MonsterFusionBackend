@@ -9,7 +9,6 @@ namespace MonsterFusionBackend.View
     internal interface IMenuOption
     {
         string Name { get; }
-        bool OptionAutoRun { get; }
         bool IsRunning { get; set; }
         Task Start();
         void Stop();

@@ -45,10 +45,9 @@ namespace MonsterFusionBackend
         static void Main(string[] args)
         {
             Init();
-            StartAutoRunOption();
             while(true)
             {
-                ShowMenuSelection();
+                WaitUserSelectOption();
             }
         }
         static void Init()
@@ -59,30 +58,17 @@ namespace MonsterFusionBackend
             listOptions.Add(new AviatorResetBoardOption());
             listOptions.Add(new PVPControllerOption());
             listOptions.Add(new PartyEventOption());
-            listOptions.Sort((a,b) => b.OptionAutoRun.CompareTo(a.OptionAutoRun));
-        }
-        static void StartAutoRunOption()
-        {
-            foreach(var option in listOptions)
-            {
-                if(option.OptionAutoRun)
-                {
-                    Task.Run(option.Start);
-                }
-            }
         }
         static void DrawMenu()
         {
             Console.Clear();
-            Console.WriteLine("                    __  __                  \r\n                   |  \\/  |                 \r\n                   | \\  / | ___ _ __  _   _ \r\n                   | |\\/| |/ _ \\ '_ \\| | | |\r\n                   | |  | |  __/ | | | |_| |\r\n                   |_|  |_|\\___|_| |_|\\__,_|\r\n                                            \r\n                                            ");
-            Console.WriteLine();
             for(int i = 0; i < listOptions.Count; i++)
             {
                 Console.WriteLine(i + ". " + listOptions[i].Name + " " + (listOptions[i].IsRunning? "[running]" : "[stopped]"));
             }
             Console.WriteLine();
         }
-        static void ShowMenuSelection()
+        static void WaitUserSelectOption()
         {
             int selected = -1;
             while (true)
@@ -94,24 +80,21 @@ namespace MonsterFusionBackend
                 {
                     if(selected >= 0 && selected < listOptions.Count)
                     {
-                        break;
+                        if (!listOptions[selected].IsRunning)
+                        {
+                            Task.Run(listOptions[selected].Start);
+                            DrawMenu();
+                        }
                     }
                 }
             }
-            if (!listOptions[selected].IsRunning)
-            {
-                listOptions[selected].Start();
-            }
-            else
-            {
-                listOptions[selected].Stop();
-            }
+
         }
 
         public static void ShowMenu()
         {
             Console.Clear();
-            ShowMenuSelection();
+            WaitUserSelectOption();
         }
     }
 }
