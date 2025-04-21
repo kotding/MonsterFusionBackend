@@ -1,14 +1,13 @@
-﻿using MonsterFusionBackend.View;
+﻿using Microsoft.Win32;
+using MonsterFusionBackend.Data;
+using MonsterFusionBackend.View;
 using MonsterFusionBackend.View.MainMenu;
+using MonsterFusionBackend.View.MainMenu.PartyEventOption;
+using MonsterFusionBackend.View.MainMenu.PVPControllerOption;
 using System;
 using System.Collections.Generic;
-using Microsoft.Win32;
 using System.Diagnostics;
-using MonsterFusionBackend.View.MainMenu.PVPControllerOption;
-using MonsterFusionBackend.View.MainMenu.PartyEventOption;
 using System.Threading.Tasks;
-using MonsterFusionBackend.Data;
-using System.Threading;
 
 namespace MonsterFusionBackend
 {
@@ -44,6 +43,7 @@ namespace MonsterFusionBackend
         #endregion
 
         static List<IMenuOption> listOptions;
+        const string url = "test";
         static void Main(string[] args)
         {
             Init();
@@ -57,11 +57,11 @@ namespace MonsterFusionBackend
         static void Init()
         {
             if (AutoStartup == false) AutoStartup = true;
-            string url = "test";
             DBManager.SetFBDatabaseUrl(url);
         }
         static void DrawMenu()
         {
+            Console.WriteLine("For " + url);
             for(int i = 0; i < listOptions.Count; i++)
             {
                 Console.WriteLine($"{i}. {listOptions[i].Name}");
