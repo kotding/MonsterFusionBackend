@@ -5,9 +5,10 @@ using System.Collections.Generic;
 using Microsoft.Win32;
 using System.Diagnostics;
 using MonsterFusionBackend.View.MainMenu.PVPControllerOption;
-using MonsterFusionBackend.View.MainMenu.AviatorCleanerOption;
 using MonsterFusionBackend.View.MainMenu.PartyEventOption;
 using System.Threading.Tasks;
+using MonsterFusionBackend.Data;
+using System.Threading;
 
 namespace MonsterFusionBackend
 {
@@ -41,60 +42,44 @@ namespace MonsterFusionBackend
             }
         }
         #endregion
+
         static List<IMenuOption> listOptions;
         static void Main(string[] args)
         {
             Init();
-            while(true)
+            StartAllOptions();
+            DrawMenu();
+            while (true)
             {
-                WaitUserSelectOption();
+                Console.ReadKey();
             }
         }
         static void Init()
         {
             if (AutoStartup == false) AutoStartup = true;
-            listOptions = new List<IMenuOption>();
-            listOptions.Add(new AviatorCleanerOptions());
-            listOptions.Add(new AviatorResetBoardOption());
-            listOptions.Add(new PVPControllerOption());
-            listOptions.Add(new PartyEventOption());
+            string url = "test";
+            DBManager.SetFBDatabaseUrl(url);
         }
         static void DrawMenu()
         {
-            Console.Clear();
             for(int i = 0; i < listOptions.Count; i++)
             {
-                Console.WriteLine(i + ". " + listOptions[i].Name + " " + (listOptions[i].IsRunning? "[running]" : "[stopped]"));
+                Console.WriteLine($"{i}. {listOptions[i].Name}");
             }
             Console.WriteLine();
         }
-        static void WaitUserSelectOption()
+        static void StartAllOptions()
         {
-            int selected = -1;
-            while (true)
+            listOptions = new List<IMenuOption>();
+
+            listOptions.Add(new AviatorCleanerOptions());
+            listOptions.Add(new PVPControllerOption());
+            listOptions.Add(new PartyEventOption());
+
+            foreach (var  option in listOptions)
             {
-                DrawMenu();
-                Console.Write("Choose your option [on/off]: ");
-                char key = Console.ReadKey().KeyChar;
-                if(int.TryParse(key.ToString(),out selected))
-                {
-                    if(selected >= 0 && selected < listOptions.Count)
-                    {
-                        if (!listOptions[selected].IsRunning)
-                        {
-                            Task.Run(listOptions[selected].Start);
-                            DrawMenu();
-                        }
-                    }
-                }
+                Task task = Task.Run(option.Start);
             }
-
-        }
-
-        public static void ShowMenu()
-        {
-            Console.Clear();
-            WaitUserSelectOption();
         }
     }
 }

@@ -11,35 +11,28 @@ using System.Threading.Tasks;
 
 namespace MonsterFusionBackend.View.MainMenu.PVPControllerOption
 {
-
     internal class PVPControllerOption : IMenuOption
     {
-
-        //const int TotalRankOpenTime = 7 * 24 * 60; // minute
-        //const int TotalRankCloseTime = 2 * 60;// minute
-        const int TotalRankOpenTime = 5; // minute
-        const int TotalRankCloseTime = 2;// minute
-
+        const int TotalRankOpenTime = 7 * 24 * 60; // minute
+        const int TotalRankCloseTime = 60;// minute
         public string Name => "PVP Controller Option";
 
-        public bool IsRunning { get; set; }
         string[] allRankNames = new string[]
         {
             "Copper","Silver","Gold","Platinum","Diamond","Ultimate"
         };
         public async Task Start()
         {
-            IsRunning = true;
-            //Program.ShowMenu();
             while(true)
             {
                 DateTime now = await DateTimeManager.GetUTCAsync();
                 string expiredString = await DBManager.FBClient.Child("PVP").Child("PVP_Config").Child("EndTime").OnceAsJsonAsync();
                 expiredString = expiredString.Replace("\"", "");
+                DateTime expiredDate = DateTime.ParseExact(expiredString, "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture);
                 Console.WriteLine();
                 Console.WriteLine("[PVP]: now:" + now.ToString("dd/MM/yyyy HH:mm:ss"));
                 Console.WriteLine("[PVP]: expired:" + expiredString);
-                DateTime expiredDate = DateTime.ParseExact(expiredString, "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture);
+                Console.WriteLine("[PVP]: reset after " + (expiredDate - now).ToString());
                 if (now >= expiredDate)
                 {
                     Console.WriteLine("[PVP]: dowload pvp backup file...");
@@ -241,11 +234,6 @@ namespace MonsterFusionBackend.View.MainMenu.PVPControllerOption
             rankingsData["RankIndexs"] = rankIndexsData;
 
             await DBManager.FBClient.Child("PVP").Child("Rankings").PutAsync(JsonConvert.SerializeObject(rankingsData));
-        }
-        public void Stop()
-        {
-            IsRunning = false;
-            Program.ShowMenu();
         }
     }
 }

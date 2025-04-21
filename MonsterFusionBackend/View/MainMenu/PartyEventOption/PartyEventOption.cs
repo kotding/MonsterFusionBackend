@@ -9,20 +9,10 @@ namespace MonsterFusionBackend.View.MainMenu.PartyEventOption
 {
     internal class PartyEventOption : IMenuOption
     {
-        //static int TotalRankOpenTime = 3 * 24 * 60; // minute
-        //static int OffsetResetTime = -5; // minute
-
-        static int TotalRankOpenTime = 5; // minute
-        static int OffsetResetTime = -5; // minute
-
+        static int TotalRankOpenTime = 3 * 24 * 60;
         public string Name => "Party event";
-
-        public bool IsRunning { get; set; }
-
         public async Task Start()
         {
-            IsRunning = true;
-            //Program.ShowMenu();
             while(true)
             {
                 DateTime now = await DateTimeManager.GetUTCAsync();
@@ -30,11 +20,11 @@ namespace MonsterFusionBackend.View.MainMenu.PartyEventOption
                 string expiredString = await DBManager.FBClient.Child("PartyRank/TimeExpired").OnceAsJsonAsync();
                 expiredString = expiredString.Replace("\"", "");
                 long longExpired = long.Parse(expiredString);
-                DateTime expiredDate = longExpired.ToDate().AddMinutes(OffsetResetTime);
+                DateTime expiredDate = longExpired.ToDate().AddMinutes(-5);
                 Console.WriteLine();
                 Console.WriteLine("[Party] now: " + now);
                 Console.WriteLine("[Party] expired: " + expiredDate);
-                Console.WriteLine($"[Party] reset rank in {(expiredDate - now).TotalSeconds}s.");
+                Console.WriteLine($"[Party] reset rank in {(expiredDate - now)}");
                 if (now >= expiredDate)
                 {
                     Console.WriteLine("[Party] Dowload party rank backup file...");
@@ -73,14 +63,9 @@ namespace MonsterFusionBackend.View.MainMenu.PartyEventOption
             await DBManager.FBClient.Child("PartyRank/TotalUserCount").PutAsync(0);
 
             DateTime now = await DateTimeManager.GetUTCAsync();
-            DateTime nextExpiredDate = now.AddMinutes(TotalRankOpenTime).AddMinutes(-OffsetResetTime);
-            Console.WriteLine("[Party] set next expired:" + nextExpiredDate);
+            DateTime nextExpiredDate = now.AddMinutes(TotalRankOpenTime).AddMinutes(5);
             await DBManager.FBClient.Child("PartyRank/TimeExpired").PutAsync(nextExpiredDate.ToLong());
-        }
-        public void Stop()
-        {
-            IsRunning = false;
-            Program.ShowMenu();
+            Console.WriteLine("[Party] set next expired:" + nextExpiredDate);
         }
     }
 }

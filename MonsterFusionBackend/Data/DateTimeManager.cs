@@ -16,6 +16,7 @@ namespace MonsterFusionBackend.Data
             var tcs = new TaskCompletionSource<DateTime>();
             string js = await RESTCaller.GET(api);
             var data = JsonConvert.DeserializeObject<DateTime>(js);
+            data = DateTime.SpecifyKind(data, DateTimeKind.Utc);
             tcs.SetResult(data);
             return await tcs.Task;
         }
