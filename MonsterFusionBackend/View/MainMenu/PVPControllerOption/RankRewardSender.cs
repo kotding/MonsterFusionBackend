@@ -361,14 +361,14 @@ namespace MonsterFusionBackend.View.MainMenu.PVPControllerOption
         {
             RankRewardPack pack = listRewardPack.Find(x => x.rankType == rankType);
             if (pack == null) return null;
-            RankReward rankRw = pack.listRewards.FindLast(x => x.top <= top + 1);
+            RankReward rankRw = pack.listRewards.FindLast(x => top + 1 <= x.top);
             if (rankRw == null) return null;
             return rankRw.rewards;
         }
 
         public static async Task SendPartyRewardTo(string userId, int top)
         {
-            RankReward rw = listPartyRankRewards.Find(x => x.top <= top + 1);
+            RankReward rw = listPartyRankRewards.Find(x => top + 1 <= x.top);
             if (rw == null) return;
             List<RewardStruct> listRewardStruct = new List<RewardStruct>();
             foreach (var r in rw.rewards)
