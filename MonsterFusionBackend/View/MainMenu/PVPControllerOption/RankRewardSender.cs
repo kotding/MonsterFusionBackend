@@ -8,7 +8,7 @@ namespace MonsterFusionBackend.View.MainMenu.PVPControllerOption
     internal class RankRewardSender
     {
         #region DATA
-        static List<RankRewardPack> listRewardPack = new List<RankRewardPack>
+        static List<RankRewardPack> listPVPRewardPack = new List<RankRewardPack>
         {
             new RankRewardPack
             {
@@ -354,14 +354,14 @@ namespace MonsterFusionBackend.View.MainMenu.PVPControllerOption
                 };
                 listRwStructs.Add(rwStruct);
             }
-            string content = $"You have successfully reached the {top + 1}st rank in the leaderboard and received a reward.\r\n\r\nTry to maintain this form in the next week.";
-            await MailSender.SendRewards(userId, "Ranking rewards", "Congratulations on receiving your ranking reward last week!", content, listRwStructs);
+            string content = $"You reached rank {top + 1} in last week's PvP leaderboard and earned a reward!\r\n\r\nKeep it up this week!";
+            await MailSender.SendRewards(userId, "PvP Ranking Reward", "Congrats on your PvP reward!", content, listRwStructs);
         }
         static List<RewardData> GetReward(RankType rankType, int top)
         {
-            RankRewardPack pack = listRewardPack.Find(x => x.rankType == rankType);
+            RankRewardPack pack = listPVPRewardPack.Find(x => x.rankType == rankType);
             if (pack == null) return null;
-            RankReward rankRw = pack.listRewards.FindLast(x => top + 1 <= x.top);
+            RankReward rankRw = pack.listRewards.Find(x => top + 1 <= x.top);
             if (rankRw == null) return null;
             return rankRw.rewards;
         }
@@ -375,8 +375,9 @@ namespace MonsterFusionBackend.View.MainMenu.PVPControllerOption
             {
                 listRewardStruct.Add(new RewardStruct(r.REWARD_TYPE, r.NumberReward));
             }
-            string content = $"You have successfully reached the {top + 1}st rank in the leaderboard and received a reward.\r\n\r\nTry to maintain this form in the next week.";
-            await MailSender.SendRewards(userId, "Party rank reward", "Congratulations on receiving your ranking reward", content, listRewardStruct);
+            string content = $"You reached rank {top + 1} in last week's Party leaderboard and earned a reward!\r\n\r\nKeep pushing for more!";
+            await MailSender.SendRewards(userId, "Party Rank Reward", "Congrats on your Party ranking reward!", content, listRewardStruct);
+
         }
     }
 }
