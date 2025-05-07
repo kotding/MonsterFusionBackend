@@ -4,6 +4,7 @@ using MonsterFusionBackend.View;
 using MonsterFusionBackend.View.MainMenu;
 using MonsterFusionBackend.View.MainMenu.PartyEventOption;
 using MonsterFusionBackend.View.MainMenu.PVPControllerOption;
+using MonsterFusionBackend.View.MainMenu.SoloBattleOption;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -72,9 +73,10 @@ namespace MonsterFusionBackend
         {
             listOptions = new List<IMenuOption>();
 
-            listOptions.Add(new AviatorCleanerOptions());
-            listOptions.Add(new PVPControllerOption());
-            listOptions.Add(new PartyEventOption());
+            //listOptions.Add(new AviatorCleanerOptions());
+            //listOptions.Add(new PVPControllerOption());
+            //listOptions.Add(new PartyEventOption());
+            listOptions.Add(new SoloBattleOption());
 
             foreach (var  option in listOptions)
             {
