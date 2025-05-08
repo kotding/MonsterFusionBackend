@@ -73,10 +73,10 @@ namespace MonsterFusionBackend
         {
             listOptions = new List<IMenuOption>();
 
-            //listOptions.Add(new AviatorCleanerOptions());
-            //listOptions.Add(new PVPControllerOption());
-            //listOptions.Add(new PartyEventOption());
-            listOptions.Add(new SoloBattleOption());
+            listOptions.Add(new AviatorCleanerOptions());
+            listOptions.Add(new PVPControllerOption());
+            listOptions.Add(new PartyEventOption());
+            //listOptions.Add(new SoloBattleOption());
 
             foreach (var  option in listOptions)
             {

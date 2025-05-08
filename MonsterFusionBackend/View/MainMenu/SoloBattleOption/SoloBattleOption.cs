@@ -91,7 +91,7 @@ namespace MonsterFusionBackend.View.MainMenu.SoloBattleOption
 
                 for(int i = 0; i < list.Count; i++)
                 {
-
+                    await RankRewardSender.SendSoloBattleReward(list[i].Key, i);
                 }
             }
             //DateTime now = await DateTimeManager.GetUTCAsync();

@@ -1,5 +1,6 @@
 ﻿using Firebase.Database.Query;
 using MonsterFusionBackend.Data;
+using MonsterFusionBackend.Utils;
 using MonsterFusionBackend.View.MainMenu.PVPControllerOption;
 using System;
 using System.IO;
@@ -15,26 +16,34 @@ namespace MonsterFusionBackend.View.MainMenu.PartyEventOption
         {
             while(true)
             {
-                DateTime now = await DateTimeManager.GetUTCAsync();
-
-                string expiredString = await DBManager.FBClient.Child("PartyRank/TimeExpired").OnceAsJsonAsync();
-                expiredString = expiredString.Replace("\"", "");
-                long longExpired = long.Parse(expiredString);
-                DateTime expiredDate = longExpired.ToDate().AddMinutes(-5);
-                Console.WriteLine();
-                Console.WriteLine("[Party] now: " + now);
-                Console.WriteLine("[Party] expired: " + expiredDate);
-                Console.WriteLine($"[Party] reset rank in {(expiredDate - now)}");
-                if (now >= expiredDate)
+                try
                 {
-                    Console.WriteLine("[Party] Dowload party rank backup file...");
-                    await DowloadBackupParty();
-                    Console.WriteLine("[Party] Dowload party rank back up file success.");
-                    Console.WriteLine("[Party] Run reset rank party rank...");
-                    await ResetPartyRank();
-                    Console.WriteLine("[Party] Reset party rank success.");
+                    DateTime now = await DateTimeManager.GetUTCAsync();
+
+                    string expiredString = await DBManager.FBClient.Child("PartyRank/TimeExpired").OnceAsJsonAsync();
+                    expiredString = expiredString.Replace("\"", "");
+                    long longExpired = long.Parse(expiredString);
+                    DateTime expiredDate = longExpired.ToDate().AddMinutes(-5);
+                    Console.WriteLine();
+                    Console.WriteLine("[Party] now: " + now);
+                    Console.WriteLine("[Party] expired: " + expiredDate);
+                    Console.WriteLine($"[Party] reset rank in {(expiredDate - now)}");
+                    if (now >= expiredDate)
+                    {
+                        Console.WriteLine("[Party] Dowload party rank backup file...");
+                        await DowloadBackupParty();
+                        Console.WriteLine("[Party] Dowload party rank back up file success.");
+                        Console.WriteLine("[Party] Run reset rank party rank...");
+                        await ResetPartyRank();
+                        Console.WriteLine("[Party] Reset party rank success.");
+                    }
+                    await Task.Delay(60000);
                 }
-                await Task.Delay(60000);
+                catch (Exception ex)
+                {
+                    LogUtils.LogI(ex.Message);
+                    LogUtils.LogI(ex.StackTrace);
+                }
             }
         }
         async Task DowloadBackupParty()

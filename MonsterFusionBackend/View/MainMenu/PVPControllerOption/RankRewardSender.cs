@@ -337,6 +337,89 @@ namespace MonsterFusionBackend.View.MainMenu.PVPControllerOption
         }
     },
 };
+        static List<RankReward> listSoloBattleRankReward = new List<RankReward>()
+        {
+            new RankReward
+    {
+        top = 1,
+        rewards = new List<RewardData>()
+        {
+            new RewardData { REWARD_TYPE = REWARD_TYPE.LEGEND_EGG, NumberReward = 1 }
+        }
+    },
+    new RankReward
+    {
+        top = 2,
+        rewards = new List<RewardData>()
+        {
+            new RewardData { REWARD_TYPE = REWARD_TYPE.ELEMENTAL_EGG, NumberReward = 3 }
+        }
+    },
+    new RankReward
+    {
+        top = 3,
+        rewards = new List<RewardData>()
+        {
+            new RewardData { REWARD_TYPE = REWARD_TYPE.ELEMENTAL_EGG, NumberReward = 1 }
+        }
+    },
+    new RankReward
+    {
+        top = 4,
+        rewards = new List<RewardData>()
+        {
+            new RewardData { REWARD_TYPE = REWARD_TYPE.DIAMOND, NumberReward = 600 }
+        }
+    },
+    new RankReward
+    {
+        top = 5,
+        rewards = new List<RewardData>()
+        {
+            new RewardData { REWARD_TYPE = REWARD_TYPE.DIAMOND, NumberReward = 500 }
+        }
+    },
+    new RankReward
+    {
+        top = 6,
+        rewards = new List<RewardData>()
+        {
+            new RewardData { REWARD_TYPE = REWARD_TYPE.DIAMOND, NumberReward = 400 }
+        }
+    },
+    new RankReward
+    {
+        top = 7,
+        rewards = new List<RewardData>()
+        {
+            new RewardData { REWARD_TYPE = REWARD_TYPE.DIAMOND, NumberReward = 300 }
+        }
+    },
+    new RankReward
+    {
+        top = 8,
+        rewards = new List<RewardData>()
+        {
+            new RewardData { REWARD_TYPE = REWARD_TYPE.DIAMOND, NumberReward = 200 }
+        }
+    },
+    new RankReward
+    {
+        top = 9,
+        rewards = new List<RewardData>()
+        {
+            new RewardData { REWARD_TYPE = REWARD_TYPE.DIAMOND, NumberReward = 100 }
+        }
+    },
+    new RankReward
+    {
+        top = 50,
+        rewards = new List<RewardData>()
+        {
+            new RewardData { REWARD_TYPE = REWARD_TYPE.DIAMOND, NumberReward = 50 }
+        }
+    },
+        };
 
         #endregion
         public static async Task SendRewardTo(string userId, RankType rankType, int top)
@@ -377,6 +460,20 @@ namespace MonsterFusionBackend.View.MainMenu.PVPControllerOption
             }
             string content = $"You reached rank {top + 1} in last week's Party leaderboard and earned a reward!\r\n\r\nKeep pushing for more!";
             await MailSender.SendRewards(userId, "Party Rank Reward", "Congrats on your Party ranking reward!", content, listRewardStruct);
+
+        }
+
+        public static async Task SendSoloBattleReward(string userId, int top)
+        {
+            RankReward rw = listPartyRankRewards.Find(x => top + 1 <= x.top);
+            if (rw == null) return;
+            List<RewardStruct> listRewardStruct = new List<RewardStruct>();
+            foreach (var r in rw.rewards)
+            {
+                listRewardStruct.Add(new RewardStruct(r.REWARD_TYPE, r.NumberReward));
+            }
+            string content = $"You reached rank {top + 1} Solo leaderboard and earned a reward!\r\n\r\nKeep pushing for more!";
+            await MailSender.SendRewards(userId, "Solo battle reward", "Congrats on your Solo ranking reward!", content, listRewardStruct);
 
         }
     }

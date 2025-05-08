@@ -141,6 +141,7 @@
     <Compile Include="View\MainMenu\PVPControllerOption\PVPControllerOption.cs" />
     <Compile Include="View\MainMenu\PVPControllerOption\PVPOptionData.cs" />
     <Compile Include="View\MainMenu\PVPControllerOption\RankRewardSender.cs" />
+    <Compile Include="View\MainMenu\SoloBattleOption\SoloBattleOption.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
