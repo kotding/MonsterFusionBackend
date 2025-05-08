@@ -106,7 +106,9 @@ namespace MonsterFusionBackend.View.MainMenu.PVPControllerOption
                     }
 
                     nextArea.listAllRanks.AddRange(listRankUps);
-                    currArea.listAllRanks.Clear();
+                    currArea.listAllRanks.RemoveAll(x => listRankUps.Contains(x));
+                    currArea.listAllRanks.Confuse();
+                    if (i == 0) currArea.listAllRanks.Clear();
                     foreach(var rank in currArea.listAllRanks)
                     {
                         rank.RankIndex = 999;
