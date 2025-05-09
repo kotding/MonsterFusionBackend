@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Firebase.Database.Query;
 using System.Collections.Generic;
 using Firebase.Database;
-using System.Diagnostics;
 using Newtonsoft.Json;
 
 namespace MonsterFusionBackend.View.MainMenu.SoloBattleOption
@@ -15,7 +14,7 @@ namespace MonsterFusionBackend.View.MainMenu.SoloBattleOption
     {
         public string Name => "Solo battle";
         // Chay vong lap de check thoi gian reset (1p/lan)
-        
+
         public async Task Start()
         {
             while (true)
@@ -31,7 +30,7 @@ namespace MonsterFusionBackend.View.MainMenu.SoloBattleOption
                 Console.WriteLine();
                 Console.WriteLine("[SoloBattle] expired: " + expiredDate);
                 Console.WriteLine($"[SoloBattle] reset rank in {(expiredDate - now)}");
-                
+
                 if (now >= expiredDate)
                 {
                     // dowload backup file truoc khi reset
@@ -55,53 +54,105 @@ namespace MonsterFusionBackend.View.MainMenu.SoloBattleOption
         }
         async Task ResetSoloBattle()
         {
-            var allUser = await DBManager.FBClient.Child("SoloBattleRank/Solo1vs1Rank/AllUserRank").OnceAsync<object>();
-            Dictionary<string, List<FirebaseObject<object>>> dict = new Dictionary<string, List<FirebaseObject<object>>>();
+            var allUser = await DBManager.FBClient
+                .Child("SoloBattleRank/Solo1vs1Rank/AllUserRank")
+                .OnceAsync<object>();
 
-            // lay toan bo user, sau do chia thanh cac nhom khac nhau
-            foreach (var child in allUser)
+            List<FirebaseObject<object>> allUserList = new List<FirebaseObject<object>>(allUser);
+            Console.WriteLine($"Total users before cleanup: {allUserList.Count}");
+
+            Dictionary<string, List<FirebaseObject<object>>> groupDict = new Dictionary<string, List<FirebaseObject<object>>>();
+            List<FirebaseObject<object>> activeUsers = new List<FirebaseObject<object>>();
+
+            foreach (var user in allUserList)
             {
-                List<FirebaseObject<object>> listUserInGroup = null;
-                string group = DBManager.FBClient.Child("SoloBattleRank/Solo1vs1Rank/AllUserRank").Child(child.Key).Child("IndexOfRankgroup").OnceSingleAsync<string>().Result.ToString();
-                Console.WriteLine("Group " + group);
-                if(dict.ContainsKey(group))
+                SoloRank userData = JsonConvert.DeserializeObject<SoloRank>(user.Object.ToString());
+                if (int.TryParse(userData.DailyRankPoint, out int point) && point > 0)
                 {
-                    listUserInGroup = dict[group];
+                    string group = await DBManager.FBClient
+                        .Child("SoloBattleRank/Solo1vs1Rank/AllUserRank")
+                        .Child(user.Key)
+                        .Child("IndexOfRankgroup")
+                        .OnceSingleAsync<string>();
+
+                    if (!groupDict.ContainsKey(group))
+                        groupDict[group] = new List<FirebaseObject<object>>();
+                    groupDict[group].Add(user);
+
+                    activeUsers.Add(user); // giữ lại user hoạt động
                 }
                 else
                 {
-                    listUserInGroup = new List<FirebaseObject<object>>();
-                    dict[group] = listUserInGroup;
+                    // xóa user đã nghỉ chơi (DailyRankPoint = 0)
+                    await DBManager.FBClient
+                        .Child("SoloBattleRank/Solo1vs1Rank/AllUserRank")
+                        .Child(user.Key)
+                        .DeleteAsync();
+                    Console.WriteLine("Solo battle : delete user " + user.Key);
                 }
-                listUserInGroup.Add(child);
             }
-            Console.WriteLine("Group : " + dict.Keys.Count);
-            // sap xep lai cac nhom va gui thuong
-            foreach(var key in dict.Keys)
+
+            // Gửi phần thưởng theo group
+            foreach (var kvp in groupDict)
             {
-                var list = dict[key];
+                var list = kvp.Value;
                 list.Sort((a, b) =>
                 {
                     int aPoint = int.Parse(JsonConvert.DeserializeObject<SoloRank>(a.Object.ToString()).DailyRankPoint);
                     int bPoint = int.Parse(JsonConvert.DeserializeObject<SoloRank>(b.Object.ToString()).DailyRankPoint);
-                    if (aPoint > bPoint) return 1;
-                    if(bPoint > aPoint) return -1;
-                    return 0;
+                    return bPoint.CompareTo(aPoint);
                 });
 
-                for(int i = 0; i < list.Count; i++)
+                for (int i = 0; i < list.Count; i++)
                 {
-                    await RankRewardSender.SendSoloBattleReward(list[i].Key, i);
+                    string userId = JsonConvert.DeserializeObject<SoloRank>(list[i].Object.ToString()).UserId;
+                    await RankRewardSender.SendSoloBattleReward(userId, i);
                 }
             }
-            //DateTime now = await DateTimeManager.GetUTCAsync();
-            //DateTime nextExpiredDate = now.AddMinutes(24 * 60).AddMinutes(5);
-            //await DBManager.FBClient.Child("SoloBattleRank/Solo1vs1Rank/TimeExpired").PutAsync(nextExpiredDate.ToLong());
-            //Console.WriteLine("[SolotBattle] set next expired:" + nextExpiredDate);
+
+            // Reset điểm về 0 cho user còn hoạt động
+            foreach (var user in activeUsers)
+            {
+                await DBManager.FBClient
+                    .Child("SoloBattleRank/Solo1vs1Rank/AllUserRank")
+                    .Child(user.Key)
+                    .Child("DailyRankPoint")
+                    .PutAsync("0");
+            }
+
+            // Chia lại group cho user còn hoạt động (mỗi 100 người)
+            Shuffle(activeUsers);
+            for (int i = 0; i < activeUsers.Count; i++)
+            {
+                int newGroup = i / 100;
+                await DBManager.FBClient
+                    .Child("SoloBattleRank/Solo1vs1Rank/AllUserRank")
+                    .Child(activeUsers[i].Key)
+                    .Child("IndexOfRankgroup")
+                    .PutAsync(newGroup.ToString());
+            }
+
+            await Task.Delay(30 * 60 * 1000);
+            DateTime now = await DateTimeManager.GetUTCAsync();
+            DateTime nextExpired = now.AddDays(1);
+            await DBManager.FBClient.Child("SoloBattleRank/Solo1vs1Rank/TimeExpired").PutAsync(nextExpired.ToLong());
+            Console.WriteLine("[SoloBattle] Reset + reward + regroup completed.");
+        }
+
+        static void Shuffle<T>(List<T> list)
+        {
+            Random rng = new Random();
+            int n = list.Count;
+            while (n > 1)
+            {
+                int k = rng.Next(n--);
+                (list[n], list[k]) = (list[k], list[n]);
+            }
         }
     }
     internal class SoloRank
     {
         public string DailyRankPoint;
+        public string UserId;
     }
 }
