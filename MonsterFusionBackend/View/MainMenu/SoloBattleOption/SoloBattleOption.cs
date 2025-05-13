@@ -7,6 +7,7 @@ using Firebase.Database.Query;
 using System.Collections.Generic;
 using Firebase.Database;
 using Newtonsoft.Json;
+using MonsterFusionBackend.Utils;
 
 namespace MonsterFusionBackend.View.MainMenu.SoloBattleOption
 {
@@ -19,31 +20,37 @@ namespace MonsterFusionBackend.View.MainMenu.SoloBattleOption
         {
             while (true)
             {
-                // Call thoi gian hien tai & tgian ket thuc
-                DateTime now = await DateTimeManager.GetUTCAsync();
-                string expiredString = await DBManager.FBClient.Child("SoloBattleRank/Solo1vs1Rank/TimeExpired").OnceAsJsonAsync();
-
-                expiredString = expiredString.Replace("\"", "");
-                long longExpired = long.Parse(expiredString);
-                DateTime expiredDate = longExpired.ToDate();
-
-                Console.WriteLine();
-                Console.WriteLine("[SoloBattle] expired: " + expiredDate);
-                Console.WriteLine($"[SoloBattle] reset rank in {(expiredDate - now)}");
-
-                if (now >= expiredDate)
+                try
                 {
-                    // dowload backup file truoc khi reset
-                    Console.WriteLine("[SoloBattle] Dowload backup file...");
-                    await DownloadBackupFile();
-                    Console.WriteLine("[SoloBattle] Dowload back up file success.");
-                    Console.WriteLine("[SoloBattle] Run reset rank rank...");
+                    // Call thoi gian hien tai & tgian ket thuc
+                    DateTime now = await DateTimeManager.GetUTCAsync();
+                    string expiredString = await DBManager.FBClient.Child("SoloBattleRank/Solo1vs1Rank/TimeExpired").OnceAsJsonAsync();
 
-                    // tien hanh reset
-                    await ResetSoloBattle();
-                    Console.WriteLine("[SoloBattle] Reset rank success.");
+                    expiredString = expiredString.Replace("\"", "");
+                    long longExpired = long.Parse(expiredString);
+                    DateTime expiredDate = longExpired.ToDate();
+
+                    Console.WriteLine();
+                    Console.WriteLine("[SoloBattle] expired: " + expiredDate);
+                    Console.WriteLine($"[SoloBattle] reset rank in {(expiredDate - now)}");
+
+                    if (now >= expiredDate)
+                    {
+                        // dowload backup file truoc khi reset
+                        Console.WriteLine("[SoloBattle] Dowload backup file...");
+                        await DownloadBackupFile();
+                        Console.WriteLine("[SoloBattle] Dowload back up file success.");
+                        Console.WriteLine("[SoloBattle] Run reset rank rank...");
+
+                        // tien hanh reset
+                        await ResetSoloBattle();
+                        Console.WriteLine("[SoloBattle] Reset rank success.");
+                    }
+                    await Task.Delay(60000);
+                }catch (Exception ex)
+                {
+                    LogUtils.LogI("[SoloBattle] " + ex.Message);
                 }
-                await Task.Delay(60000);
             }
         }
         async Task DownloadBackupFile()
@@ -131,8 +138,8 @@ namespace MonsterFusionBackend.View.MainMenu.SoloBattleOption
                     .Child("IndexOfRankgroup")
                     .PutAsync(newGroup.ToString());
             }
-
-            await Task.Delay(30 * 60 * 1000);
+            await DBManager.FBClient.Child("SoloBattleRank/Solo1vs1Rank/TotalUser").PutAsync(activeUsers.Count);
+            await Task.Delay(3 * 60 * 1000);
             DateTime now = await DateTimeManager.GetUTCAsync();
             DateTime nextExpired = now.AddDays(1);
             await DBManager.FBClient.Child("SoloBattleRank/Solo1vs1Rank/TimeExpired").PutAsync(nextExpired.ToLong());
