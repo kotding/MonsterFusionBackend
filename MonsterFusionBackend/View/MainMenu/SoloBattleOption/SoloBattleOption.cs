@@ -73,30 +73,39 @@ namespace MonsterFusionBackend.View.MainMenu.SoloBattleOption
 
             foreach (var user in allUserList)
             {
-                SoloRank userData = JsonConvert.DeserializeObject<SoloRank>(user.Object.ToString());
-                if (int.TryParse(userData.DailyRankPoint, out int point) && point > 0)
+                try
                 {
-                    string group = await DBManager.FBClient
-                        .Child("SoloBattleRank/Solo1vs1Rank/AllUserRank")
-                        .Child(user.Key)
-                        .Child("IndexOfRankgroup")
-                        .OnceSingleAsync<string>();
+                    SoloRank userData = JsonConvert.DeserializeObject<SoloRank>(user.Object.ToString());
+                    if (int.TryParse(userData.DailyRankPoint, out int point) && point > 0)
+                    {
+                        string group = await DBManager.FBClient
+                            .Child("SoloBattleRank/Solo1vs1Rank/AllUserRank")
+                            .Child(user.Key)
+                            .Child("IndexOfRankgroup")
+                            .OnceSingleAsync<string>();
 
-                    if (!groupDict.ContainsKey(group))
-                        groupDict[group] = new List<FirebaseObject<object>>();
-                    groupDict[group].Add(user);
+                        if (!groupDict.ContainsKey(group))
+                            groupDict[group] = new List<FirebaseObject<object>>();
+                        groupDict[group].Add(user);
 
-                    activeUsers.Add(user); // giữ lại user hoạt động
-                }
-                else
+                        activeUsers.Add(user); // giữ lại user hoạt động
+                    }
+                    else
+                    {
+                        // xóa user đã nghỉ chơi (DailyRankPoint = 0)
+                        await DBManager.FBClient
+                            .Child("SoloBattleRank/Solo1vs1Rank/AllUserRank")
+                            .Child(user.Key)
+                            .DeleteAsync();
+                        Console.WriteLine("Solo battle : delete user " + user.Key);
+                    }
+                }catch(Exception ex)
                 {
-                    // xóa user đã nghỉ chơi (DailyRankPoint = 0)
-                    await DBManager.FBClient
-                        .Child("SoloBattleRank/Solo1vs1Rank/AllUserRank")
-                        .Child(user.Key)
-                        .DeleteAsync();
-                    Console.WriteLine("Solo battle : delete user " + user.Key);
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("[SoloBattle] " + ex.Message + " " + ex.StackTrace);
+                    Console.ForegroundColor = ConsoleColor.White;
                 }
+                
             }
             Console.WriteLine("[SoloBattle] Send reward");
             // Gửi phần thưởng theo group

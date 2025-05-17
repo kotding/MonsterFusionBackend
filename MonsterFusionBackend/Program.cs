@@ -44,7 +44,7 @@ namespace MonsterFusionBackend
         #endregion
 
         static List<IMenuOption> listOptions;
-        const string url = "test";
+        const string url = "android";
         static void Main(string[] args)
         {
             Init();
