@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using Firebase.Database;
 using Newtonsoft.Json;
 using MonsterFusionBackend.Utils;
+using System.Diagnostics;
 
 namespace MonsterFusionBackend.View.MainMenu.SoloBattleOption
 {
@@ -23,10 +24,10 @@ namespace MonsterFusionBackend.View.MainMenu.SoloBattleOption
                 try
                 {
                     // Call thoi gian hien tai & tgian ket thuc
+                    Console.WriteLine("[SoloBattle] Check Reset Rank");
                     DateTime now = await DateTimeManager.GetUTCAsync();
                     string expiredString = await DBManager.FBClient.Child("SoloBattleRank/Solo1vs1Rank/TimeExpired").OnceAsJsonAsync();
-                    Console.WriteLine(expiredString);
-                    if(!string.IsNullOrEmpty(expiredString))
+                    if(expiredString != "null")
                     {
                         expiredString = expiredString.Replace("\"", "");
                         long longExpired = long.Parse(expiredString);
@@ -49,6 +50,10 @@ namespace MonsterFusionBackend.View.MainMenu.SoloBattleOption
                             Console.WriteLine("[SoloBattle] Reset rank success.");
                         }
 
+                    }
+                    else
+                    {
+                        Console.WriteLine("Wait 60s....");
                     }
 
                     await Task.Delay(60000);
