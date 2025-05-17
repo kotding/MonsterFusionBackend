@@ -26,26 +26,31 @@ namespace MonsterFusionBackend.View.MainMenu.SoloBattleOption
                     DateTime now = await DateTimeManager.GetUTCAsync();
                     string expiredString = await DBManager.FBClient.Child("SoloBattleRank/Solo1vs1Rank/TimeExpired").OnceAsJsonAsync();
                     Console.WriteLine(expiredString);
-                    expiredString = expiredString.Replace("\"", "");
-                    long longExpired = long.Parse(expiredString);
-                    DateTime expiredDate = longExpired.ToDate();
-
-                    Console.WriteLine();
-                    Console.WriteLine("[SoloBattle] expired: " + expiredDate);
-                    Console.WriteLine($"[SoloBattle] reset rank in {(expiredDate - now)}");
-
-                    if (now >= expiredDate)
+                    if(!string.IsNullOrEmpty(expiredString))
                     {
-                        // dowload backup file truoc khi reset
-                        Console.WriteLine("[SoloBattle] Dowload backup file...");
-                        await DownloadBackupFile();
-                        Console.WriteLine("[SoloBattle] Dowload back up file success.");
-                        Console.WriteLine("[SoloBattle] Run reset rank rank...");
+                        expiredString = expiredString.Replace("\"", "");
+                        long longExpired = long.Parse(expiredString);
+                        DateTime expiredDate = longExpired.ToDate();
 
-                        // tien hanh reset
-                        await ResetSoloBattle();
-                        Console.WriteLine("[SoloBattle] Reset rank success.");
+                        Console.WriteLine();
+                        Console.WriteLine("[SoloBattle] expired: " + expiredDate);
+                        Console.WriteLine($"[SoloBattle] reset rank in {(expiredDate - now)}");
+
+                        if (now >= expiredDate)
+                        {
+                            // dowload backup file truoc khi reset
+                            Console.WriteLine("[SoloBattle] Dowload backup file...");
+                            await DownloadBackupFile();
+                            Console.WriteLine("[SoloBattle] Dowload back up file success.");
+                            Console.WriteLine("[SoloBattle] Run reset rank rank...");
+
+                            // tien hanh reset
+                            await ResetSoloBattle();
+                            Console.WriteLine("[SoloBattle] Reset rank success.");
+                        }
+
                     }
+
                     await Task.Delay(60000);
                 }catch (Exception ex)
                 {
