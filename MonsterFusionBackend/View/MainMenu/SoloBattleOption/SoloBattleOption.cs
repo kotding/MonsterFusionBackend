@@ -98,7 +98,7 @@ namespace MonsterFusionBackend.View.MainMenu.SoloBattleOption
                     Console.WriteLine("Solo battle : delete user " + user.Key);
                 }
             }
-
+            Console.WriteLine("[SoloBattle] Send reward");
             // Gửi phần thưởng theo group
             foreach (var kvp in groupDict)
             {
@@ -114,9 +114,10 @@ namespace MonsterFusionBackend.View.MainMenu.SoloBattleOption
                 {
                     string userId = JsonConvert.DeserializeObject<SoloRank>(list[i].Object.ToString()).UserId;
                     await RankRewardSender.SendSoloBattleReward(userId, i);
+                    Console.WriteLine("[SoloBattle] Send reward to " + userId);
                 }
             }
-
+            Console.WriteLine("[SoloBattle] Reset rankpoint for active user");
             // Reset điểm về 0 cho user còn hoạt động
             foreach (var user in activeUsers)
             {
@@ -125,6 +126,7 @@ namespace MonsterFusionBackend.View.MainMenu.SoloBattleOption
                     .Child(user.Key)
                     .Child("DailyRankPoint")
                     .PutAsync("0");
+                Console.WriteLine("[SoloBattle] reset rank point " + user.Key);
             }
 
             // Chia lại group cho user còn hoạt động (mỗi 100 người)
@@ -138,8 +140,9 @@ namespace MonsterFusionBackend.View.MainMenu.SoloBattleOption
                     .Child("IndexOfRankgroup")
                     .PutAsync(newGroup.ToString());
             }
+            Console.WriteLine("[SoloBattle] Update total user " + activeUsers.Count);
             await DBManager.FBClient.Child("SoloBattleRank/Solo1vs1Rank/TotalUser").PutAsync(activeUsers.Count);
-            await Task.Delay(3 * 60 * 1000);
+            await Task.Delay(60 * 1000);
             DateTime now = await DateTimeManager.GetUTCAsync();
             DateTime nextExpired = now.AddDays(1);
             await DBManager.FBClient.Child("SoloBattleRank/Solo1vs1Rank/TimeExpired").PutAsync(nextExpired.ToLong());
