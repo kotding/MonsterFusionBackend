@@ -25,7 +25,7 @@ namespace MonsterFusionBackend.View.MainMenu.SoloBattleOption
                     // Call thoi gian hien tai & tgian ket thuc
                     DateTime now = await DateTimeManager.GetUTCAsync();
                     string expiredString = await DBManager.FBClient.Child("SoloBattleRank/Solo1vs1Rank/TimeExpired").OnceAsJsonAsync();
-
+                    Console.WriteLine(expiredString);
                     expiredString = expiredString.Replace("\"", "");
                     long longExpired = long.Parse(expiredString);
                     DateTime expiredDate = longExpired.ToDate();
@@ -50,6 +50,9 @@ namespace MonsterFusionBackend.View.MainMenu.SoloBattleOption
                 }catch (Exception ex)
                 {
                     LogUtils.LogI("[SoloBattle] " + ex.Message);
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine(ex.Message + " " + ex.StackTrace);
+                    Console.ForegroundColor = ConsoleColor.Blue;
                 }
             }
         }
@@ -152,7 +155,7 @@ namespace MonsterFusionBackend.View.MainMenu.SoloBattleOption
             Shuffle(activeUsers);
             for (int i = 0; i < activeUsers.Count; i++)
             {
-                int newGroup = i / 100;
+                int newGroup = i / 50;
                 await DBManager.FBClient
                     .Child("SoloBattleRank/Solo1vs1Rank/AllUserRank")
                     .Child(activeUsers[i].Key)
@@ -160,7 +163,7 @@ namespace MonsterFusionBackend.View.MainMenu.SoloBattleOption
                     .PutAsync(newGroup.ToString());
             }
             Console.WriteLine("[SoloBattle] Update total user " + activeUsers.Count);
-            await DBManager.FBClient.Child("SoloBattleRank/Solo1vs1Rank/TotalUser").PutAsync(activeUsers.Count);
+            await DBManager.FBClient.Child("SoloBattleRank/Solo1vs1Rank/TotalUser").PutAsync(0);
             await Task.Delay(60 * 1000);
             DateTime now = await DateTimeManager.GetUTCAsync();
             DateTime nextExpired = now.AddDays(1);
