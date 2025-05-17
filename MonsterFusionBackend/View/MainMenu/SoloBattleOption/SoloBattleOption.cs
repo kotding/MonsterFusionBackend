@@ -122,6 +122,16 @@ namespace MonsterFusionBackend.View.MainMenu.SoloBattleOption
                 for (int i = 0; i < list.Count; i++)
                 {
                     string userId = JsonConvert.DeserializeObject<SoloRank>(list[i].Object.ToString()).UserId;
+                    if (userId == "938890ab1470d17e895875a73eab2e163eaf0f43")
+                    {
+                        Console.ForegroundColor = ConsoleColor.Blue;
+                        foreach(var item in list)
+                        {
+                            var user = JsonConvert.DeserializeObject<SoloRank>(list[i].Object.ToString());
+                            Console.WriteLine($"{user.UserId}  {user.DailyRankPoint}");
+                        }
+                        Console.ForegroundColor = ConsoleColor.White;
+                    }
                     await RankRewardSender.SendSoloBattleReward(userId, i);
                     Console.WriteLine("[SoloBattle] Send reward to " + userId);
                 }
