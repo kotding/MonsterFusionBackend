@@ -44,8 +44,8 @@ namespace MonsterFusionBackend.View.MainMenu.PVPControllerOption
                         Console.WriteLine("[PVP]: start reset pvp rank...");
                         await RunResetRank();
                         Console.WriteLine("[PVP]: reset rank complete.");
-                        Console.WriteLine($"[PVP]: wait re-open pvp.... {60 * TotalRankCloseTime}s");
-                        await Task.Delay(1000 * 60 * TotalRankCloseTime);
+                        Console.WriteLine($"[PVP]: wait re-open pvp.... {60}s");
+                        await Task.Delay(1000 * 60);
                         await DBManager.FBClient.Child("PVP/IsOpen").PutAsync(JsonConvert.SerializeObject(true));
                         now = await DateTimeManager.GetUTCAsync();
                         now = now.AddMinutes(TotalRankOpenTime);
@@ -91,11 +91,12 @@ namespace MonsterFusionBackend.View.MainMenu.PVPControllerOption
                 AreaRank nextArea = listAreaRanks[i + 1];
 
                 List<PVPRankData> listRankUps = currArea.listAllRanks.Where(x => x.RankIndex < 3 && x.RankPoint != 1000).ToList();
+                List<PVPRankData> listRankClaimRewards = currArea.listAllRanks.Where(x => x.RankIndex < 50 && x.RankPoint != 1000).ToList();
                 Console.WriteLine("LIST ALL RANKS " + currArea.listAllRanks.Count);
                 Console.WriteLine("LIST RANK UP " + listRankUps.Count);
                 if (listRankUps != null)
                 {
-                    foreach (var rank in listRankUps)
+                    foreach (var rank in listRankClaimRewards)
                     {
                         Console.Write("Send reward to " + rank.UserID + " top " + rank.RankIndex);
                         await RankRewardSender.SendRewardTo(rank.UserID, rank.RankType, rank.RankIndex);
@@ -224,6 +225,7 @@ namespace MonsterFusionBackend.View.MainMenu.PVPControllerOption
 
                     foreach (var rank in currRankArea.listSubAreaRanks[currSubAreaIndex].listRanks)
                     {
+                        if (rank == null || string.IsNullOrEmpty(rank.UserID)) continue;
                         rankIndexsData[rank.UserID] = new Dictionary<string, string>
                 {
                     { "Path", $"{currRankName}/{currRankName}_{currSubAreaIndex + 1}" }
