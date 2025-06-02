@@ -23,8 +23,6 @@ namespace MonsterFusionBackend.View.MainMenu.SoloBattleOption
             {
                 try
                 {
-                    // Call thoi gian hien tai & tgian ket thuc
-                    Console.WriteLine("[SoloBattle] Check Reset Rank");
                     DateTime now = await DateTimeManager.GetUTCAsync();
                     string expiredString = await DBManager.FBClient.Child("SoloBattleRank/Solo1vs1Rank/TimeExpired").OnceAsJsonAsync();
                     if(expiredString != "null")
@@ -32,21 +30,17 @@ namespace MonsterFusionBackend.View.MainMenu.SoloBattleOption
                         expiredString = expiredString.Replace("\"", "");
                         long longExpired = long.Parse(expiredString);
                         DateTime expiredDate = longExpired.ToDate();
-
-                        Console.WriteLine();
-                        Console.WriteLine("[SoloBattle] expired: " + expiredDate);
                         Console.WriteLine($"[SoloBattle] reset rank in {(expiredDate - now)}");
 
                         if (now >= expiredDate)
                         {
                             // dowload backup file truoc khi reset
                             Console.WriteLine("[SoloBattle] Dowload backup file...");
-                            await DownloadBackupFile();
+                            await DownloadBackupFile("Before_Reset");
                             Console.WriteLine("[SoloBattle] Dowload back up file success.");
-                            Console.WriteLine("[SoloBattle] Run reset rank rank...");
-
                             // tien hanh reset
                             await ResetSoloBattle();
+                            await DownloadBackupFile("After_Backup");
                             Console.WriteLine("[SoloBattle] Reset rank success.");
                         }
 
@@ -66,10 +60,10 @@ namespace MonsterFusionBackend.View.MainMenu.SoloBattleOption
                 }
             }
         }
-        async Task DownloadBackupFile()
+        async Task DownloadBackupFile(string jsonFileName)
         {
             string js = await DBManager.FBClient.Child("SoloBattleRank").OnceAsJsonAsync();
-            string backUpFilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "SoloBattleRank_" + DateTime.UtcNow.ToString("dd-MM-yyyy-HH-mm-ss") + ".json");
+            string backUpFilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), $"SoloBattleRank_{jsonFileName}_" + DateTime.UtcNow.ToString("dd-MM-yyyy-HH-mm-ss") + ".json");
             File.WriteAllText(backUpFilePath, js);
         }
         async Task ResetSoloBattle()
