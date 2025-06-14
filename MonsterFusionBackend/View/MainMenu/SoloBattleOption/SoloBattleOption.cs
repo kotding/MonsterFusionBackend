@@ -139,8 +139,8 @@ namespace MonsterFusionBackend.View.MainMenu.SoloBattleOption
                         }
                         Console.ForegroundColor = ConsoleColor.White;
                     }
-                    await RankRewardSender.SendSoloBattleReward(userId, i);
-                    Console.WriteLine("[SoloBattle] Send reward to " + userId);
+                    //await RankRewardSender.SendSoloBattleReward(userId, i);
+                    //Console.WriteLine("[SoloBattle] Send reward to " + userId);
                 }
             }
             Console.WriteLine("[SoloBattle] Reset rankpoint for active user");

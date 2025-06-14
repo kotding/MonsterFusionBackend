@@ -98,9 +98,9 @@ namespace MonsterFusionBackend.View.MainMenu.PVPControllerOption
                 {
                     foreach (var rank in listRankClaimRewards)
                     {
-                        Console.Write("Send reward to " + rank.UserID + " top " + rank.RankIndex);
-                        await RankRewardSender.SendRewardTo(rank.UserID, rank.RankType, rank.RankIndex);
-                        Console.WriteLine("  [sended]");
+                        //Console.Write("Send reward to " + rank.UserID + " top " + rank.RankIndex);
+                        //await RankRewardSender.SendRewardTo(rank.UserID, rank.RankType, rank.RankIndex);
+                        //Console.WriteLine("  [sended]");
                         rank.RankType = (RankType)Enum.Parse(typeof(RankType), allRankNames[(i + 1)].ToUpper(), true);
                         rank.RankPoint = 1000;
                         rank.RankIndex = 999;

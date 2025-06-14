@@ -64,7 +64,7 @@ namespace MonsterFusionBackend.View.MainMenu.PartyEventOption
                     int index = 0;
                     foreach(var user in group)
                     {
-                        await RankRewardSender.SendPartyRewardTo(user.Key, index);
+                        //await RankRewardSender.SendPartyRewardTo(user.Key, index);
                         index++;
                     }
                     await DBManager.FBClient.Child("PartyRank").Child(child.Key).DeleteAsync();
