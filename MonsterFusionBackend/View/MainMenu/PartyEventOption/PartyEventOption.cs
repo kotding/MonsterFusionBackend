@@ -73,7 +73,7 @@ namespace MonsterFusionBackend.View.MainMenu.PartyEventOption
             await DBManager.FBClient.Child("PartyRank/TotalUserCount").PutAsync(0);
 
             DateTime now = await DateTimeManager.GetUTCAsync();
-            DateTime nextExpiredDate = now.AddMinutes(TotalRankOpenTime).AddMinutes(5);
+            DateTime nextExpiredDate = now.AddMinutes(TotalRankOpenTime).AddMinutes(5).Date;
             await DBManager.FBClient.Child("PartyRank/TimeExpired").PutAsync(nextExpiredDate.ToLong());
             Console.WriteLine("[Party] set next expired:" + nextExpiredDate);
         }

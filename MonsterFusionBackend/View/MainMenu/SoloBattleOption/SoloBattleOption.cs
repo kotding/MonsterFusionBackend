@@ -170,7 +170,7 @@ namespace MonsterFusionBackend.View.MainMenu.SoloBattleOption
             await DBManager.FBClient.Child("SoloBattleRank/Solo1vs1Rank/TotalUser").PutAsync(0);
             await Task.Delay(60 * 1000);
             DateTime now = await DateTimeManager.GetUTCAsync();
-            DateTime nextExpired = now.AddDays(1);
+            DateTime nextExpired = now.AddDays(1).Date;
             await DBManager.FBClient.Child("SoloBattleRank/Solo1vs1Rank/TimeExpired").PutAsync(nextExpired.ToLong());
             Console.WriteLine("[SoloBattle] Reset + reward + regroup completed.");
         }

@@ -45,10 +45,10 @@ namespace MonsterFusionBackend.View.MainMenu.PVPControllerOption
                         await RunResetRank();
                         Console.WriteLine("[PVP]: reset rank complete.");
                         Console.WriteLine($"[PVP]: wait re-open pvp.... {60}s");
-                        await Task.Delay(1000 * 60);
+                        await Task.Delay(1000 * 20);
                         await DBManager.FBClient.Child("PVP/IsOpen").PutAsync(JsonConvert.SerializeObject(true));
                         now = await DateTimeManager.GetUTCAsync();
-                        now = now.AddMinutes(TotalRankOpenTime);
+                        now = now.AddMinutes(TotalRankOpenTime).Date;
                         string nowString = now.ToString("dd/MM/yyyy HH:mm:ss");
                         await DBManager.FBClient.Child("PVP/PVP_Config/EndTime").PutAsync(JsonConvert.SerializeObject(nowString));
                         Console.WriteLine("[PVP]: pvp rank re-opened.");
