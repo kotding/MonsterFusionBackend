@@ -28,10 +28,8 @@ namespace MonsterFusionBackend.View.MainMenu.PartyEventOption
                     if (now >= expiredDate)
                     {
                         Console.WriteLine("[Party] Dowload party rank backup file...");
-                        await DowloadBackupParty("before_reset");
                         Console.WriteLine("[Party] Run reset rank party rank...");
                         await ResetPartyRank();
-                        await DowloadBackupParty("after_reset");
                         Console.WriteLine("[Party] Reset party rank success.");
                     }
                     await Task.Delay(60000);
@@ -46,12 +44,6 @@ namespace MonsterFusionBackend.View.MainMenu.PartyEventOption
                     Console.ForegroundColor = ConsoleColor.White;
                 }
             }
-        }
-        async Task DowloadBackupParty(string fileName)
-        {
-            string js = await DBManager.FBClient.Child("PartyRank").OnceAsJsonAsync();
-            string backUpFilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), $"PartyRank_{fileName}" + DateTime.UtcNow.ToString("dd-MM-yyyy-HH-mm-ss") + ".json");
-            File.WriteAllText(backUpFilePath, js);
         }
         async Task ResetPartyRank()
         {

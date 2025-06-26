@@ -36,11 +36,9 @@ namespace MonsterFusionBackend.View.MainMenu.SoloBattleOption
                         {
                             // dowload backup file truoc khi reset
                             Console.WriteLine("[SoloBattle] Dowload backup file...");
-                            await DownloadBackupFile("Before_Reset");
                             Console.WriteLine("[SoloBattle] Dowload back up file success.");
                             // tien hanh reset
                             await ResetSoloBattle();
-                            await DownloadBackupFile("After_Backup");
                             Console.WriteLine("[SoloBattle] Reset rank success.");
                         }
 
@@ -59,12 +57,6 @@ namespace MonsterFusionBackend.View.MainMenu.SoloBattleOption
                     Console.ForegroundColor = ConsoleColor.Blue;
                 }
             }
-        }
-        async Task DownloadBackupFile(string jsonFileName)
-        {
-            string js = await DBManager.FBClient.Child("SoloBattleRank").OnceAsJsonAsync();
-            string backUpFilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), $"SoloBattleRank_{jsonFileName}_" + DateTime.UtcNow.ToString("dd-MM-yyyy-HH-mm-ss") + ".json");
-            File.WriteAllText(backUpFilePath, js);
         }
         async Task ResetSoloBattle()
         {

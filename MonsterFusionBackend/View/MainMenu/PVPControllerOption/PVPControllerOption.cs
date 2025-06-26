@@ -39,7 +39,6 @@ namespace MonsterFusionBackend.View.MainMenu.PVPControllerOption
                     if (now >= expiredDate)
                     {
                         Console.WriteLine("[PVP]: dowload pvp backup file...");
-                        await DowloadBackupPVP();
                         Console.WriteLine("[PVP]: dowload pvp backup file success.");
                         Console.WriteLine("[PVP]: start reset pvp rank...");
                         await RunResetRank();
@@ -63,12 +62,6 @@ namespace MonsterFusionBackend.View.MainMenu.PVPControllerOption
                     LogUtils.LogI(ex.StackTrace);
                 }
             }
-        }
-        async Task DowloadBackupPVP()
-        {
-            string js = await DBManager.FBClient.Child("PVP").OnceAsJsonAsync();
-            string backUpFilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "PVPBackup_" + DateTime.UtcNow.ToString("dd-MM-yyyy-HH-mm-ss") + ".json");
-            File.WriteAllText(backUpFilePath, js);
         }
         async Task RunResetRank()
         {
