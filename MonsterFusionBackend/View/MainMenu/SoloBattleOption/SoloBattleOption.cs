@@ -48,7 +48,6 @@ namespace MonsterFusionBackend.View.MainMenu.SoloBattleOption
                         Console.WriteLine("Wait 60s....");
                     }
 
-                    await Task.Delay(60000);
                 }catch (Exception ex)
                 {
                     LogUtils.LogI("[SoloBattle] " + ex.Message);
@@ -56,6 +55,7 @@ namespace MonsterFusionBackend.View.MainMenu.SoloBattleOption
                     Console.WriteLine(ex.Message + " " + ex.StackTrace);
                     Console.ForegroundColor = ConsoleColor.Blue;
                 }
+                await Task.Delay(20 * 60000);
             }
         }
         async Task ResetSoloBattle()

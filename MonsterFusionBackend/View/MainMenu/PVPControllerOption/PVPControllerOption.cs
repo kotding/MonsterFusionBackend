@@ -54,13 +54,13 @@ namespace MonsterFusionBackend.View.MainMenu.PVPControllerOption
                         await Task.Delay(1000 * 30);
                     }
                     Console.WriteLine("[PVP]: wait delay 60s...");
-                    await Task.Delay(60000);
                 }
                 catch (Exception ex)
                 {
                     LogUtils.LogI(ex.Message);
                     LogUtils.LogI(ex.StackTrace);
                 }
+                await Task.Delay(20 * 60000);
             }
         }
         async Task RunResetRank()

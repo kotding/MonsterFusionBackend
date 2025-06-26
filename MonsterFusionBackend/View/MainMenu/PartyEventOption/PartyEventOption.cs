@@ -32,7 +32,6 @@ namespace MonsterFusionBackend.View.MainMenu.PartyEventOption
                         await ResetPartyRank();
                         Console.WriteLine("[Party] Reset party rank success.");
                     }
-                    await Task.Delay(60000);
                 }
                 catch (Exception ex)
                 {
@@ -43,6 +42,7 @@ namespace MonsterFusionBackend.View.MainMenu.PartyEventOption
                     Console.WriteLine(ex.StackTrace);
                     Console.ForegroundColor = ConsoleColor.White;
                 }
+                await Task.Delay(20 * 60000);
             }
         }
         async Task ResetPartyRank()
