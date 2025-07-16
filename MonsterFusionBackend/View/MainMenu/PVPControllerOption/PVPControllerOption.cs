@@ -4,6 +4,7 @@ using MonsterFusionBackend.Utils;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -14,27 +15,27 @@ namespace MonsterFusionBackend.View.MainMenu.PVPControllerOption
 {
     internal class PVPControllerOption : IMenuOption
     {
-        const int TotalRankOpenTime = 7 * 24 * 60; // minute
-        const int TotalRankCloseTime = 60;// minute
         public string Name => "PVP Controller Option";
 
         string[] allRankNames = new string[]
         {
             "Copper","Silver","Gold","Platinum","Diamond","Ultimate"
         };
+        const string DATE_TIME_PATTERN = "yyyy-MM-dd HH:mm:ss";
+        const string DATE_TIME_PATTERN2 = "dd/MM/yyyy HH:mm:ss";
         public async Task Start()
         {
-            while(true)
+            while (true)
             {
                 try
                 {
                     DateTime now = await DateTimeManager.GetUTCAsync();
-                    string expiredString = await DBManager.FBClient.Child("PVP").Child("PVP_Config").Child("EndTime").OnceAsJsonAsync();
-                    expiredString = expiredString.Replace("\"", "");
-                    DateTime expiredDate = DateTime.ParseExact(expiredString, "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture);
+                    string pvpEventJson = await DBManager.FBClient.Child("PVP").Child("RemoteEventData").OnceAsJsonAsync();
+                    PVP_Event_Data pvpEventData = JsonConvert.DeserializeObject<PVP_Event_Data>(pvpEventJson);
+                    DateTime expiredDate = DateTime.ParseExact(pvpEventData.time_expired, DATE_TIME_PATTERN, CultureInfo.InvariantCulture);
                     Console.WriteLine();
-                    Console.WriteLine("[PVP]: now:" + now.ToString("dd/MM/yyyy HH:mm:ss"));
-                    Console.WriteLine("[PVP]: expired:" + expiredString);
+                    Console.WriteLine("[PVP]: now:" + now.ToString(DATE_TIME_PATTERN));
+                    Console.WriteLine("[PVP]: expired:" + pvpEventJson);
                     Console.WriteLine("[PVP]: reset after " + (expiredDate - now).ToString());
                     if (now >= expiredDate)
                     {
@@ -47,9 +48,16 @@ namespace MonsterFusionBackend.View.MainMenu.PVPControllerOption
                         await Task.Delay(1000 * 20);
                         await DBManager.FBClient.Child("PVP/IsOpen").PutAsync(JsonConvert.SerializeObject(true));
                         now = await DateTimeManager.GetUTCAsync();
-                        now = now.AddMinutes(TotalRankOpenTime).Date;
-                        string nowString = now.ToString("dd/MM/yyyy HH:mm:ss");
-                        await DBManager.FBClient.Child("PVP/PVP_Config/EndTime").PutAsync(JsonConvert.SerializeObject(nowString));
+                        int daysUntilNextMonday = ((int)DayOfWeek.Monday - (int)now.DayOfWeek + 7) % 7;
+                        if (daysUntilNextMonday == 0)
+                            daysUntilNextMonday = 7;
+                        DateTime expired = now.Date.AddDays(daysUntilNextMonday);
+                        string expiredString = expired.ToString(DATE_TIME_PATTERN);
+                        pvpEventData.time_expired = expiredString;
+                        pvpEventData.time_start = now.ToString(DATE_TIME_PATTERN);
+                        pvpEventData.uid_event += 1;
+                        await DBManager.FBClient.Child("PVP/RemoteEventData").PutAsync(JsonConvert.SerializeObject(pvpEventData));
+                        await DBManager.FBClient.Child("PVP/PVP_Config/EndTime").PutAsync(JsonConvert.SerializeObject(expired.ToString(DATE_TIME_PATTERN2)));
                         Console.WriteLine("[PVP]: pvp rank re-opened.");
                         await Task.Delay(1000 * 30);
                     }
@@ -240,4 +248,11 @@ namespace MonsterFusionBackend.View.MainMenu.PVPControllerOption
             await DBManager.FBClient.Child("PVP").Child("Rankings").PutAsync(JsonConvert.SerializeObject(rankingsData));
         }
     }
+}
+[Serializable]
+public class PVP_Event_Data
+{
+    public string time_expired;
+    public string time_start;
+    public uint uid_event;
 }

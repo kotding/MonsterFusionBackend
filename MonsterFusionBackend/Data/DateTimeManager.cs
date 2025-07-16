@@ -12,12 +12,9 @@ namespace MonsterFusionBackend.Data
     {
         public static async Task<DateTime> GetUTCAsync()
         {
-            string api = "http://104.248.159.111/api/time/global-time";
+            //string api = "http://104.248.159.111/api/time/global-time";
             var tcs = new TaskCompletionSource<DateTime>();
-            string js = await RESTCaller.GET(api);
-            var data = JsonConvert.DeserializeObject<DateTime>(js);
-            data = DateTime.SpecifyKind(data, DateTimeKind.Utc);
-            tcs.SetResult(data);
+            tcs.SetResult(DateTime.UtcNow);
             return await tcs.Task;
         }
 
