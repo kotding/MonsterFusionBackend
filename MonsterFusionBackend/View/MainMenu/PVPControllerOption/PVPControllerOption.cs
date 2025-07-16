@@ -119,6 +119,13 @@ namespace MonsterFusionBackend.View.MainMenu.PVPControllerOption
                 }
             }
 
+            AreaRank ultimateRank = listAreaRanks[listAreaRanks.Count - 1];
+            foreach(var rank in ultimateRank.listAllRanks)
+            {
+                rank.RankPoint = 1000;
+                rank.RankIndex = 999;
+            }
+
             foreach (var area in listAreaRanks)
             {
                 area.listSubAreaRanks.Clear();
